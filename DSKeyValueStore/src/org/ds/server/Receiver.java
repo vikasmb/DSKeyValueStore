@@ -51,24 +51,19 @@ public class Receiver implements Runnable {
 
 				nodeSocket.receive(msgPacket);
 
-				ByteArrayInputStream bis = new ByteArrayInputStream(
-						msgPacket.getData());
+				ByteArrayInputStream bis = new ByteArrayInputStream(msgPacket.getData());
 				ObjectInputStream ois = new ObjectInputStream(bis);
 
 				Object memberList = ois.readObject();
 
 				if (memberList instanceof List<?>) {
 					List<Member> memList = (List<Member>) memberList;
-					DSLogger.log("Receiver", "run",
-							"Received member list of size: " + memList.size());
+					DSLogger.log("Receiver", "run", "Received member list of size: " + memList.size());
 					for (Member mem : memList) {
-						DSLogger.log("Receiver", "run", "Received member:  "
-								+ mem.getIdentifier() + " with heartbeat:"
-								+ mem.getHeartBeat());
+						DSLogger.log("Receiver", "run", "Received member:  "+ mem.getIdentifier() + " with heartbeat:"+ mem.getHeartBeat());
 					}
 					synchronized (nodeLockObject) {
-						DSLogger.log("Receiver", "run",
-								"Lock Acquired by receiver");
+						DSLogger.log("Receiver", "run","Lock Acquired by receiver");
 						for (Member member : memList) { // Iterate over the
 														// member
 														// list
@@ -82,7 +77,7 @@ public class Receiver implements Runnable {
 							 * id as this node has just started and only knows
 							 * the ip address of contact machine
 							 */
-							if (aliveMap.containsKey("#"
+						/*	if (aliveMap.containsKey("#"
 									+ member.getAddress().getHostAddress())) {
 								aliveMap.remove("#"
 										+ member.getAddress().getHostAddress());
@@ -90,27 +85,24 @@ public class Receiver implements Runnable {
 								DSLogger.report(memAddress,
 										"New member added to the list");
 								continue;
-							}
+							}*/
 
-							else if (aliveMap.containsKey(memAddress)) { // Found
+							if (aliveMap.containsKey(memAddress)) { // Found
 																			// a
 																			// match
 								DSLogger.log("Receiver", "run",
 										"Found match in alive map for: "
 												+ memAddress);
-								Member localMemberObj = aliveMap
-										.get(memAddress);
+								Member localMemberObj = aliveMap.get(memAddress);
 								// This member is leaving the network. Remove it
 								// from alive Map and add it to dead map
 								if (member.getHeartBeat() == -1) {
 									aliveMap.remove(memAddress);
 									deadMap.put(memAddress, member);
-									DSLogger.report(memAddress,
-											" This machine is voluntarily leaving the network");
+									DSLogger.report(memAddress," This machine is voluntarily leaving the network");
 									continue;
 								}
-								if (localMemberObj.getHeartBeat() >= member
-										.getHeartBeat()) {
+								if (localMemberObj.getHeartBeat() >= member.getHeartBeat()) {
 									// Ignore, as the local member's heartbeat
 									// is
 									// greater than incoming member's heartbeat.
@@ -143,10 +135,8 @@ public class Receiver implements Runnable {
 									// heartbeat of
 									// the
 									// received member.
-									Member localMemberObj = deadMap
-											.get(memAddress);
-									if (localMemberObj.getHeartBeat() >= member
-											.getHeartBeat()) {
+									Member localMemberObj = deadMap.get(memAddress);
+									if (localMemberObj.getHeartBeat() >= member.getHeartBeat()) {
 										// Ignore, as the local member's
 										// heartbeat
 										// is
@@ -158,14 +148,10 @@ public class Receiver implements Runnable {
 												// and add
 												// it
 												// to alive member list.
-										DSLogger.report(memAddress,
-												" False positive detected for this member");
-										Member localObj = deadMap
-												.get(memAddress);
-										localObj.setHeartBeat(member
-												.getHeartBeat());
-										localObj.setTimeStamp(new Date()
-												.getTime());
+										DSLogger.report(memAddress, " False positive detected for this member");
+										Member localObj = deadMap.get(memAddress);
+										localObj.setHeartBeat(member.getHeartBeat());
+										localObj.setTimeStamp(new Date().getTime());
 										deadMap.remove(memAddress);
 										aliveMap.put(memAddress, localObj);
 
@@ -176,22 +162,17 @@ public class Receiver implements Runnable {
 										// list. (Might include reincarnations
 										// of previously dead members
 									if (!memAddress.startsWith("#")) {
-										DSLogger.log("Receiver", "run",
-												"New member added with "
-														+ memAddress);
-										DSLogger.report(memAddress,
-												"New member added to the list");
+										DSLogger.log("Receiver", "run","New member added with "+ memAddress);
+										DSLogger.report(memAddress,"New member added to the list");
 										aliveMap.put(memAddress, member);
 									}
 								}
 							}
 						}
 					}
-					DSLogger.log("Receiver", "run",
-							"********Alive members after update*******");
+					DSLogger.log("Receiver", "run","********Alive members after update*******");
 					printMemberMap(aliveMap);
-					DSLogger.log("Receiver", "run",
-							"**********Dead members after update*******");
+					DSLogger.log("Receiver", "run","**********Dead members after update*******");
 					printMemberMap(deadMap);
 					DSLogger.log("Receiver", "run", "Lock released by receiver");
 				} else {
@@ -227,8 +208,7 @@ public class Receiver implements Runnable {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			ObjectOutputStream oos = new ObjectOutputStream(baos);
 			oos.writeObject(close);
-			DatagramPacket p = new DatagramPacket(baos.toByteArray(),
-					baos.toByteArray().length, InetAddress.getLocalHost(), 3456);
+			DatagramPacket p = new DatagramPacket(baos.toByteArray(),baos.toByteArray().length, InetAddress.getLocalHost(), 3456);
 			nodeSocket.send(p);
 		} catch (UnknownHostException e) {
 			DSLogger.log("Receiver", "run", e.getMessage());
@@ -243,7 +223,6 @@ public class Receiver implements Runnable {
 	public void printMemberMap(Map<String, Member> memberMap) {
 
 		Set<String> keys = memberMap.keySet();
-		;
 		Member aMember;
 		for (String key : keys) {
 			aMember = memberMap.get(key);

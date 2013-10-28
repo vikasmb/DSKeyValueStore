@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.net.InetAddress;
 import java.util.Date;
 
+import org.ds.hash.Hash;
+
 /**
  * @author pjain11, mallapu2
  * Represents a member having - 
@@ -25,7 +27,7 @@ public class Member implements Serializable{
 	public Member(InetAddress address, String id, int port){
 		this.address = address;
 		this.heartBeat = 0;
-		this.identifier = id+"#"+address.getHostAddress();
+		this.identifier = Hash.doHash(id+"#"+address.getHostAddress())+"";
 		this.timeStamp = new Date().getTime();
 		this.port = port;
 	}
