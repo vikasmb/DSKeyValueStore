@@ -43,6 +43,9 @@ public class HandleCommand implements Runnable{
 					System.out.println(map);
 				}
 			}
+			else if(cmd.equals("")){
+				
+			}
 			ois.close();
 			
 		}catch(Exception e){
