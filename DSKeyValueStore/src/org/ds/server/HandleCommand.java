@@ -42,7 +42,10 @@ public class HandleCommand implements Runnable{
 		try{
 			/*InputStream in = socket.getIn();
 			ObjectInputStream ois = new ObjectInputStream(in);*/
+			DSLogger.logAdmin(this.getClass().getName(), "run","Entering");
+
 			List<Object> cmd = (ArrayList<Object>)socket.readObject();
+			DSLogger.logAdmin(this.getClass().getName(), "run","Executing command:"+cmd.get(0));
 			if(cmd.get(0).equals("joinMe")){
 				HashMap<String, Member> map = (HashMap<String, Member>) cmd.get(1);
 				synchronized (lock) {
@@ -53,6 +56,7 @@ public class HandleCommand implements Runnable{
 			}
 			else if(cmd.equals("get")){
 				Integer key= (Integer)cmd.get(1);
+				DSLogger.logAdmin(this.getClass().getName(), "run","Looking up hashed key:"+cmd.get(1));
 				KVStoreOperation operation=new KVStoreOperation(key, KVStoreOperation.OperationType.GET);
 				operationQueue.put(operation);
 				Object value=resultQueue.take();
