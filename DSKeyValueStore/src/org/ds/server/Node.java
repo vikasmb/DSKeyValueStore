@@ -10,8 +10,10 @@ import java.net.NetworkInterface;
 import java.net.ServerSocket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -81,13 +83,13 @@ public class Node {
 		System.setProperty("logfile.name", "./machine." + id + ".log");
 		Node node = new Node(port, id);
 		System.out.println("Node with id " + id + " started with port: " + port);
+		DSLogger.logAdmin("Node", "main", "Node with id " + id + " started with port: " + port);
 		//Start Storage service here in a separate thread
-		DSLogger.logAdmin("asd", "asd", "aasd");
 		
 		Thread kvStoreThread=new Thread(new KeyValueStore(node.operationQueue,node.resultQueue));
 		kvStoreThread.start();
 		node.joinNetwork();
-	
+		
 		node.gossiper = new Gossiper(node.aliveMembers, node.deadMembers, node.lockUpdateMember, node.itself);
 		DSLogger.log("Node", "main", "Starting to gossip");
 		node.gossip = node.scheduler.scheduleAtFixedRate(node.gossiper, 0, 500, TimeUnit.MILLISECONDS);
@@ -112,18 +114,21 @@ public class Node {
 		String contactMachineAddr = XmlParseUtility.getContactMachineAddr();
 		String contactMachineIP = contactMachineAddr.split(":")[0];
 		int contactMachinePort = Integer.parseInt(contactMachineAddr.split(":")[1]);
-		System.out.println(getLocalIP());
+		
 		if (!getLocalIP().equals(contactMachineIP)) {
 			try {
-				DSLogger.log("Node", "joinNetwork", "Sending request to join Network");
+				DSLogger.logAdmin("Node", "joinNetwork", "Sending request to join Network");
 				DSocket joinRequest = new DSocket(contactMachineIP, contactMachinePort);
-				String cmd = "joinMe";
-				OutputStream out = joinRequest.getOut();
+				List<Object> cmd = new ArrayList<Object>();
+				cmd.add("joinMe");
+				cmd.add(aliveMembers);
+				joinRequest.writeObjectList(cmd);
+	/*			OutputStream out = joinRequest.getOut();
 				ObjectOutputStream ois = new ObjectOutputStream(out);
 				ois.writeObject(cmd);
 				ois.writeObject(aliveMembers);
 				ois.close();
-				out.close();
+				out.close();*/
 			} catch (NumberFormatException e) {
 				e.printStackTrace();
 			} catch (UnknownHostException e) {
