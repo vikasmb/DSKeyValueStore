@@ -155,8 +155,8 @@ public class Node {
 		
 		Executor executor = Executors.newFixedThreadPool(5);
 		try {
-			serverSocket = new ServerSocket(3450);
-			DSLogger.log("StartServer","listenToCommands","Listening to commands");
+			serverSocket = new ServerSocket(3456);
+			DSLogger.logAdmin("StartServer","listenToCommands","Listening to commands");
 			while(true){	
 				executor.execute(new HandleCommand(serverSocket.accept(), this.aliveMembers, this.lockUpdateMember,this.operationQueue,this.resultQueue));
 			}

@@ -168,9 +168,8 @@ public class DSocket {
 		ObjectOutputStream objOutStream = null;
 		try {
 			objOutStream = new ObjectOutputStream(out);
-			for (Object obj : objList) {
-				objOutStream.writeObject(obj);
-			}
+			objOutStream.writeObject(objList);
+			
 			objOutStream.close();
 		} catch (Exception e) {
 			e.printStackTrace();

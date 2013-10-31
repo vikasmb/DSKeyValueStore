@@ -37,7 +37,7 @@ public class NodeClient {
 		options.addOption("u", false, "update");
 		options.addOption("d", false, "delete");
 		options.addOption("s", false, "show");
-
+		System.setProperty("logfile.name", "./machine.log");
 		CommandLineParser parser = new PosixParser();
 		CommandLine cmd = null;
 
@@ -98,6 +98,7 @@ public class NodeClient {
 		List<Object> objList = new ArrayList<Object>();
 		objList.add(new String("get"));
 		objList.add(key);
+		invokeCommand(objList, true);
 		//.add("command~!" + "insert");
 		//invokeCommand(strList,);
 		return null;
@@ -128,7 +129,8 @@ public class NodeClient {
 
 	private Object invokeCommand(List<Object> objList,
 			boolean waitForOutputFromServer) {
-		DSLogger.log("NodeClient", "invokeCommand", "Entering");
+		DSLogger.logAdmin("NodeClient", "invokeCommand", "Entering");
+		DSLogger.logAdmin("NodeClient", "invokeCommand", objList.get(0).toString());
 		try {
 			DSocket server = new DSocket("127.0.0.1", PORT_NUMBER);
 			server.writeObjectList(objList);
