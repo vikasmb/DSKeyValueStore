@@ -44,10 +44,11 @@ public class HandleCommand implements Runnable{
 			ObjectInputStream ois = new ObjectInputStream(in);*/
 			DSLogger.logAdmin(this.getClass().getName(), "run","Entering");
 
-			List<Object> cmd = (ArrayList<Object>)socket.readObject();
-			DSLogger.logAdmin(this.getClass().getName(), "run","Executing command:"+cmd.get(0));
-			if(cmd.get(0).equals("joinMe")){
-				HashMap<String, Member> map = (HashMap<String, Member>) cmd.get(1);
+			List<Object> argList = (ArrayList<Object>)socket.readObject();
+			String cmd=(String) argList.get(0);
+			DSLogger.logAdmin(this.getClass().getName(), "run","Executing command:"+cmd);
+			if(cmd.equals("joinMe")){
+				HashMap<String, Member> map = (HashMap<String, Member>) argList.get(1);
 				synchronized (lock) {
 					this.aliveMembers.putAll(map);
 					DSLogger.log("Node", "listenToCommands", "Received join request from "+map.toString());
@@ -55,8 +56,8 @@ public class HandleCommand implements Runnable{
 				}
 			}
 			else if(cmd.equals("get")){
-				Integer key= (Integer)cmd.get(1);
-				DSLogger.logAdmin(this.getClass().getName(), "run","Looking up hashed key:"+cmd.get(1));
+				Integer key= (Integer)argList.get(1);
+				DSLogger.logAdmin("HandleCommand", "run","Looking up hashed key:"+key);
 				KVStoreOperation operation=new KVStoreOperation(key, KVStoreOperation.OperationType.GET);
 				operationQueue.put(operation);
 				Object value=resultQueue.take();
