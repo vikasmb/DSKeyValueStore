@@ -54,7 +54,7 @@ public class HandleCommand implements Runnable{
 				KVStoreOperation operation=new KVStoreOperation(key, KVStoreOperation.OperationType.GET);
 				operationQueue.put(operation);
 				Object value=resultQueue.take();
-				//Whether to return back to node or to send it to requestor node directly.
+				//Whether to return back to node or to send it to requester node directly.
 			}
 			
 		}catch(Exception e){
