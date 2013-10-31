@@ -10,6 +10,7 @@ import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
+import org.ds.hash.Hash;
 import org.ds.logger.DSLogger;
 import org.ds.socket.DSocket;
 
@@ -25,7 +26,7 @@ public class NodeClient {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		String key = null;
+		Integer key = null;
 		String value = null;
 		Options options = new Options();
 
@@ -47,7 +48,8 @@ public class NodeClient {
 		}
 
 		if (cmd.hasOption("k")) {
-			key = cmd.getOptionValue("k");
+			key = Hash.doHash(cmd.getOptionValue("k"));
+			
 		}
 
 		if (cmd.hasOption("v")) {
@@ -92,47 +94,47 @@ public class NodeClient {
 		//invokeCommand(strList);
 	}
 
-	public Object lookup(String key) {
-		List<String> strList = new ArrayList<String>();
-		strList.add("key~!" + key);
-		strList.add("command~!" + "insert");
+	public Object lookup(Integer key) {
+		List<Object> objList = new ArrayList<Object>();
+		objList.add(new String("get"));
+		objList.add(key);
+		//.add("command~!" + "insert");
 		//invokeCommand(strList,);
 		return null;
 	}
 
-	public void insert(String key, String value) {
+	public void insert(Integer key, String value) {
 		List<String> strList = new ArrayList<String>();
 		strList.add("key~!" + key);
 		strList.add("value~!" + value);
 		strList.add("command~!" + "insert");
-		invokeCommand(strList,false);
+		//invokeCommand(strList,false);
 	}
 
-	public void update(String key, String new_value) {
+	public void update(Integer key, String new_value) {
 		List<String> strList = new ArrayList<String>();
 		strList.add("key~!" + key);
 		strList.add("value~!" + new_value);
 		strList.add("command~!" + "update");
-		invokeCommand(strList,false);
+		//invokeCommand(strList,false);
 	}
 
-	public void delete(String key) {
+	public void delete(Integer key) {
 		List<String> strList = new ArrayList<String>();
 		strList.add("key~!" + key);
 		strList.add("command~!" + "insert");
-		invokeCommand(strList,false);
+		//invokeCommand(strList,false);
 	}
 
-	private Object invokeCommand(List<String> strList,
+	private Object invokeCommand(List<Object> objList,
 			boolean waitForOutputFromServer) {
 		DSLogger.log("NodeClient", "invokeCommand", "Entering");
 		try {
 			DSocket server = new DSocket("127.0.0.1", PORT_NUMBER);
-			strList.add("end~!#!" + "end");
-			server.writeMultipleLines(strList);
-			if (waitForOutputFromServer) {
+			server.writeObjectList(objList);
+			/*if (waitForOutputFromServer) {
 				List<String> output = server.readMultipleLines();				
-			}
+			}*/
 			server.close();
 			return null;
 		} catch (UnknownHostException e) {

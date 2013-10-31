@@ -149,16 +149,30 @@ public class DSocket {
 		return o;
 
 	}
-	
+
 	public void writeObject(Object obj) throws IOException {
 		DSLogger.log("DSocket", "writeObject", "Entering");
 		ObjectOutputStream objOutStream = null;
 		try {
-			objOutStream=new ObjectOutputStream(out);
+			objOutStream = new ObjectOutputStream(out);
 			objOutStream.writeObject(obj);
 			objOutStream.close();
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-		catch(Exception e){
+		DSLogger.log("DSocket", "writeObject", "Exiting");
+	}
+
+	public void writeObjectList(List<Object> objList) throws IOException {
+		DSLogger.log("DSocket", "writeObjectList", "Entering");
+		ObjectOutputStream objOutStream = null;
+		try {
+			objOutStream = new ObjectOutputStream(out);
+			for (Object obj : objList) {
+				objOutStream.writeObject(obj);
+			}
+			objOutStream.close();
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		DSLogger.log("DSocket", "writeObject", "Exiting");

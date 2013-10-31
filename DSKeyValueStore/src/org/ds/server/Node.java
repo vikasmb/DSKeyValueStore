@@ -12,8 +12,10 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -31,6 +33,8 @@ public class Node {
 	private DatagramSocket receiveSocket;
 	private Gossiper gossiper;
 	private Receiver receiver;
+	BlockingQueue<KVStoreOperation> operationQueue ;
+	BlockingQueue<Object> resultQueue ;
 	private Member itself;
 	private final ScheduledExecutorService scheduler;
 
@@ -39,6 +43,8 @@ public class Node {
 	public Node(int port, String id) {
 		aliveMembers = new HashMap<String, Member>();
 		deadMembers = new HashMap<String, Member>();
+		operationQueue= new LinkedBlockingQueue<KVStoreOperation>();
+		resultQueue= new LinkedBlockingQueue<Object>();
 		scheduler = new ScheduledThreadPoolExecutor(2);
 		lockUpdateMember = new Object();
 		try {
@@ -76,6 +82,10 @@ public class Node {
 		Node node = new Node(port, id);
 		System.out.println("Node with id " + id + " started with port: " + port);
 		//Start Storage service here in a separate thread
+		
+		
+		Thread kvStoreThread=new Thread(new KeyValueStore(node.operationQueue,node.resultQueue));
+		kvStoreThread.start();
 		node.joinNetwork();
 	
 		node.gossiper = new Gossiper(node.aliveMembers, node.deadMembers, node.lockUpdateMember, node.itself);
@@ -143,7 +153,7 @@ public class Node {
 			serverSocket = new ServerSocket(3450);
 			DSLogger.log("StartServer","listenToCommands","Listening to commands");
 			while(true){	
-				executor.execute(new HandleCommand(serverSocket.accept(), this.aliveMembers, this.lockUpdateMember));
+				executor.execute(new HandleCommand(serverSocket.accept(), this.aliveMembers, this.lockUpdateMember,this.operationQueue,this.resultQueue));
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

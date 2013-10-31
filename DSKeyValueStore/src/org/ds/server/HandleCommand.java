@@ -6,6 +6,7 @@ import java.io.ObjectInputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.HashMap;
+import java.util.concurrent.BlockingQueue;
 
 import org.ds.logger.DSLogger;
 import org.ds.member.Member;
@@ -14,13 +15,18 @@ import org.ds.socket.DSocket;
 public class HandleCommand implements Runnable{
 	DSocket socket;
 	HashMap<String, Member> aliveMembers;
+	BlockingQueue<KVStoreOperation> operationQueue;
+	BlockingQueue<Object> resultQueue;
 	Object lock;
 	
-	public HandleCommand(Socket s, HashMap<String, Member> aliveMembers, Object lock){
+	public HandleCommand(Socket s, HashMap<String, Member> aliveMembers, Object lock,BlockingQueue<KVStoreOperation> operationQueue,
+			BlockingQueue<Object> resultQueue){
 		try {
 			socket = new DSocket(s);
 			this.aliveMembers =aliveMembers;
 			this.lock = lock;
+			this.operationQueue=operationQueue;
+			this.resultQueue=resultQueue;
 		} catch (UnknownHostException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -43,7 +49,13 @@ public class HandleCommand implements Runnable{
 					System.out.println(map);
 				}
 			}
-			ois.close();
+			else if(cmd.equals("get")){
+				String key=(String)socket.readObject();
+				KVStoreOperation operation=new KVStoreOperation(key, KVStoreOperation.OperationType.GET);
+				operationQueue.put(operation);
+				Object value=resultQueue.take();
+				//Whether to return back to node or to send it to requestor node directly.
+			}
 			
 		}catch(Exception e){
 			e.printStackTrace();
