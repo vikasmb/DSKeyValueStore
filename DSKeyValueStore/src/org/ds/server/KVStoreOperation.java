@@ -1,19 +1,19 @@
 package org.ds.server;
 
 public class KVStoreOperation {
-    private String key;
+    private Integer key;
     private Object value;
     private OperationType operType;
     
 	
 
-	public KVStoreOperation(String key, OperationType operType) {
+	public KVStoreOperation(Integer key, OperationType operType) {
 		super();
 		this.key = key;
 		this.operType = operType;
 	}
 
-	public KVStoreOperation(String key, Object value, OperationType operType) {
+	public KVStoreOperation(Integer key, Object value, OperationType operType) {
 		super();
 		this.key = key;
 		this.value = value;
@@ -29,7 +29,7 @@ public class KVStoreOperation {
 		PARTITION
 	}
 	
-	public String getKey() {
+	public Integer getKey() {
 		return key;
 	}
 

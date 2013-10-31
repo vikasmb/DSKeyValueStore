@@ -5,7 +5,9 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.BlockingQueue;
 
 import org.ds.logger.DSLogger;
@@ -38,11 +40,11 @@ public class HandleCommand implements Runnable{
 	
 	public void run(){
 		try{
-			InputStream in = socket.getIn();
-			ObjectInputStream ois = new ObjectInputStream(in);
-			String cmd = (String)ois.readObject();
-			if(cmd.equals("joinMe")){
-				HashMap<String, Member> map = (HashMap<String, Member>) ois.readObject();
+			/*InputStream in = socket.getIn();
+			ObjectInputStream ois = new ObjectInputStream(in);*/
+			List<Object> cmd = (ArrayList<Object>)socket.readObject();
+			if(cmd.get(0).equals("joinMe")){
+				HashMap<String, Member> map = (HashMap<String, Member>) cmd.get(1);
 				synchronized (lock) {
 					this.aliveMembers.putAll(map);
 					DSLogger.log("Node", "listenToCommands", "Received join request from "+map.toString());
@@ -50,7 +52,7 @@ public class HandleCommand implements Runnable{
 				}
 			}
 			else if(cmd.equals("get")){
-				String key=(String)socket.readObject();
+				Integer key= (Integer)cmd.get(1);
 				KVStoreOperation operation=new KVStoreOperation(key, KVStoreOperation.OperationType.GET);
 				operationQueue.put(operation);
 				Object value=resultQueue.take();
