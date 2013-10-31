@@ -12,7 +12,7 @@ public class DSLogger {
 		 static Logger admin = Logger.getLogger("admin");
 		 
 		 public static void logAdmin(String className, String methodName, String msg){
-			 log.debug(className+":"+methodName+"~"+msg);
+			 admin.debug(className+":"+methodName+"~"+msg);
 		 }
 		 public static void report(String key, String value){
 			 if(value==""){

@@ -82,7 +82,7 @@ public class Node {
 		Node node = new Node(port, id);
 		System.out.println("Node with id " + id + " started with port: " + port);
 		//Start Storage service here in a separate thread
-		
+		DSLogger.logAdmin("asd", "asd", "aasd");
 		
 		Thread kvStoreThread=new Thread(new KeyValueStore(node.operationQueue,node.resultQueue));
 		kvStoreThread.start();
