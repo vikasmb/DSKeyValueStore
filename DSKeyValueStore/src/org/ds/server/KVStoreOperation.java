@@ -1,6 +1,7 @@
 package org.ds.server;
 
 public class KVStoreOperation {
+
     private Integer key;
     private Object value;
     private OperationType operType;
@@ -28,6 +29,7 @@ public class KVStoreOperation {
 		MERGE,
 		PARTITION
 	}
+	
 	
 	public Integer getKey() {
 		return key;
