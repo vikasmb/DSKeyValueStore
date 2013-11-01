@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
+import java.util.TreeMap;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -33,10 +34,11 @@ public class Node {
 	private DatagramSocket receiveSocket;
 	private Gossiper gossiper;
 	private Receiver receiver;
-	BlockingQueue<KVStoreOperation> operationQueue ;
-	BlockingQueue<Object> resultQueue ;
+	private BlockingQueue<KVStoreOperation> operationQueue ;
+	private BlockingQueue<Object> resultQueue ;
 	private Member itself;
 	private final ScheduledExecutorService scheduler;
+	private TreeMap<String, Member> sortedAliveMembers;
 
 	private ScheduledFuture<?> gossip = null;
 

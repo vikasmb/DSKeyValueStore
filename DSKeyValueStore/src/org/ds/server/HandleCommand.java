@@ -1,13 +1,12 @@
 package org.ds.server;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.TreeMap;
 import java.util.concurrent.BlockingQueue;
 
 import org.ds.logger.DSLogger;
@@ -16,6 +15,7 @@ import org.ds.socket.DSocket;
 
 public class HandleCommand implements Runnable{
 	DSocket socket;
+	TreeMap<String, Member> sortedAliveMembers;
 	HashMap<String, Member> aliveMembers;
 	BlockingQueue<KVStoreOperation> operationQueue;
 	BlockingQueue<Object> resultQueue;
@@ -25,7 +25,9 @@ public class HandleCommand implements Runnable{
 			BlockingQueue<Object> resultQueue){
 		try {
 			socket = new DSocket(s);
-			this.aliveMembers =aliveMembers;
+			this.aliveMembers = aliveMembers;
+			sortedAliveMembers = new TreeMap<String, Member>();
+			sortedAliveMembers.putAll(aliveMembers);
 			this.lock = lock;
 			this.operationQueue=operationQueue;
 			this.resultQueue=resultQueue;
@@ -49,7 +51,7 @@ public class HandleCommand implements Runnable{
 			if(cmd.get(0).equals("joinMe")){
 				HashMap<String, Member> map = (HashMap<String, Member>) cmd.get(1);
 				synchronized (lock) {
-					this.aliveMembers.putAll(map);
+					aliveMembers.putAll(map);
 					DSLogger.log("Node", "listenToCommands", "Received join request from "+map.toString());
 					System.out.println(map);
 				}
