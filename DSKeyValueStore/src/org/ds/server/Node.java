@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
-import java.util.TreeMap;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -38,7 +37,6 @@ public class Node {
 	private BlockingQueue<Object> resultQueue ;
 	private Member itself;
 	private final ScheduledExecutorService scheduler;
-	private TreeMap<String, Member> sortedAliveMembers;
 
 	private ScheduledFuture<?> gossip = null;
 
@@ -67,12 +65,8 @@ public class Node {
 	}
 	
 	public static void main(String[] args) {
-
-		String contactMachineIP;
-		String contactMachinePort;
 		int port = 0;
 		String id = null;
-		Member contactMember = null;
 		if (args.length < 2) {
 			System.out.println("Please pass port and id  as a parameter");
 			System.exit(0);

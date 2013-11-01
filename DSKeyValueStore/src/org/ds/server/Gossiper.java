@@ -11,7 +11,6 @@ import java.util.HashMap;
 import java.util.Random;
 import java.util.Set;
 
-import org.ds.hash.Hash;
 import org.ds.logger.DSLogger;
 import org.ds.member.Member;
 
