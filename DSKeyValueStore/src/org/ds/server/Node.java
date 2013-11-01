@@ -121,7 +121,7 @@ public class Node {
 				DSocket joinRequest = new DSocket(contactMachineIP, contactMachinePort);
 				List<Object> cmd = new ArrayList<Object>();
 				cmd.add("joinMe");
-				cmd.add(aliveMembers);
+				cmd.add(itself);
 				joinRequest.writeObjectList(cmd);
 	/*			OutputStream out = joinRequest.getOut();
 				ObjectOutputStream ois = new ObjectOutputStream(out);

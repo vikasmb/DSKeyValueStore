@@ -15,7 +15,7 @@ import org.ds.socket.DSocket;
 
 public class HandleCommand implements Runnable{
 	DSocket socket;
-	TreeMap<String, Member> sortedAliveMembers;
+	TreeMap<Integer, Member> sortedAliveMembers;
 	HashMap<String, Member> aliveMembers;
 	BlockingQueue<KVStoreOperation> operationQueue;
 	BlockingQueue<Object> resultQueue;
@@ -26,8 +26,6 @@ public class HandleCommand implements Runnable{
 		try {
 			socket = new DSocket(s);
 			this.aliveMembers = aliveMembers;
-			sortedAliveMembers = new TreeMap<String, Member>();
-			sortedAliveMembers.putAll(aliveMembers);
 			this.lock = lock;
 			this.operationQueue=operationQueue;
 			this.resultQueue=resultQueue;
@@ -45,17 +43,42 @@ public class HandleCommand implements Runnable{
 			/*InputStream in = socket.getIn();
 			ObjectInputStream ois = new ObjectInputStream(in);*/
 			DSLogger.logAdmin(this.getClass().getName(), "run","Entering");
-
+			synchronized (lock) {
+				sortedAliveMembers = this.constructSortedMap(aliveMembers);
+			}
 			List<Object> argList = (ArrayList<Object>)socket.readObject();
 			String cmd=(String) argList.get(0);
 			DSLogger.logAdmin(this.getClass().getName(), "run","Executing command:"+cmd);
+			/*
+			 * Handle different commands
+			 * */
 			if(cmd.equals("joinMe")){
-				HashMap<String, Member> map = (HashMap<String, Member>) argList.get(1);
+				Member newMember = (Member) argList.get(1);
 				synchronized (lock) {
-					aliveMembers.putAll(map);
-					DSLogger.log("Node", "listenToCommands", "Received join request from "+map.toString());
-					System.out.println(map);
+					aliveMembers.put(newMember.getIdentifier(), newMember);
+					DSLogger.log("Node", "listenToCommands", "Received join request from "+newMember.getIdentifier());
+					
 				}
+				DSLogger.log("Node", "listenToCommands", "Asking next node to send its keys ");
+				Integer newMemberHashId = Integer.parseInt(newMember.getIdentifier());
+				Integer previousNode = sortedAliveMembers.lowerKey(newMemberHashId)==null?sortedAliveMembers.lastKey():sortedAliveMembers.lowerKey(newMemberHashId);
+				KVStoreOperation operation=new KVStoreOperation(previousNode, KVStoreOperation.OperationType.MERGE);
+				operationQueue.put(operation);
+				
+			}
+			else if(cmd.equals("leave")){
+				Member newMember = (Member) argList.get(1);
+				synchronized (lock) {
+					aliveMembers.put(newMember.getIdentifier(), newMember);
+					DSLogger.log("Node", "listenToCommands", "Received join request from "+newMember.getIdentifier());
+					
+				}
+				DSLogger.log("Node", "listenToCommands", "Asking next node to send its keys ");
+				Integer newMemberHashId = Integer.parseInt(newMember.getIdentifier());
+				Integer previousNode = sortedAliveMembers.lowerKey(newMemberHashId)==null?sortedAliveMembers.lastKey():sortedAliveMembers.lowerKey(newMemberHashId);
+				KVStoreOperation operation=new KVStoreOperation(previousNode, KVStoreOperation.OperationType.MERGE);
+				operationQueue.put(operation);
+				
 			}
 			else if(cmd.equals("get")){
 				Integer key= (Integer)argList.get(1);
@@ -75,5 +98,13 @@ public class HandleCommand implements Runnable{
 				e.printStackTrace();
 			}
 		}
+	}
+	public TreeMap<Integer, Member> constructSortedMap(HashMap<String, Member> map){
+		
+		sortedAliveMembers = new TreeMap<Integer, Member>();
+		for(String key: map.keySet()){
+			sortedAliveMembers.put(Integer.parseInt(key), map.get(key));
+		}
+		return sortedAliveMembers;
 	}
 }
