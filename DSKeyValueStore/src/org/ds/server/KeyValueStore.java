@@ -19,11 +19,12 @@ public class KeyValueStore implements Runnable {
 		super();
 		this.operationQueue = operationQueue;
 		this.resultQueue = resultQueue;
+		keyValueStore.put(new Integer(250), "Test found");
 	}
 
 	@Override
 	public void run() {
-		DSLogger.log("KeyValueStore", "run", "Entered Run");
+		DSLogger.logAdmin("KeyValueStore", "run", "Entered Run");
 		KVStoreOperation oper = null;
 		while (true) {
 			try {
@@ -42,9 +43,12 @@ public class KeyValueStore implements Runnable {
 	}
 
 	private Object performOperation(KVStoreOperation oper) {
+		DSLogger.logAdmin("KeyValueStore", "performOperation", "Entered performOperation");
 		Object retValue = null;
 		switch (oper.getOperType()) {
-		case GET: retValue=keyValueStore.get(oper.getKey());
+		case GET: 
+			      retValue=keyValueStore.get(oper.getKey());
+			      DSLogger.logAdmin("KeyValueStore", "performOperation", "got value:"+retValue);
 		          break;
 		          
 		}
