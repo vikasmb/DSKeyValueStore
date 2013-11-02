@@ -49,8 +49,8 @@ public class KeyValueStore implements Runnable {
 	}
 
 	private void performOperation(KVStoreOperation oper) {
-		DSLogger.logAdmin("KeyValueStore", "performOperation",
-				"Entered performOperation");
+		DSLogger.logAdmin("KeyValueStore", "performOperation", "Entered performOperation");
+		DSLogger.logAdmin("KeyValueStore", "performOperation", keyValueStore.toString());
 		Object retValue = null;
 		switch (oper.getOperType()) {
 		case GET:

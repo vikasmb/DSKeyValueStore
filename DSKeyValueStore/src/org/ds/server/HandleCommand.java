@@ -94,9 +94,24 @@ public class HandleCommand implements Runnable{
 			else if(cmd.equals("put")){
 				Integer key= (Integer)argList.get(1);
 				Object value=(Object)argList.get(2);
-				DSLogger.logAdmin("HandleCommand", "run","Putting up hashed key:"+key+" and value:"+value);
-				KVStoreOperation operation=new KVStoreOperation(key,value, KVStoreOperation.OperationType.PUT);
-				operationQueue.put(operation);				
+				
+				DSLogger.logAdmin("HandleCommand", "run","Entered put on node "+itself.getIdentifier());
+				Integer nextNodeId = sortedAliveMembers.higherKey(key)==null?sortedAliveMembers.firstKey():sortedAliveMembers.higherKey(key);
+				
+				if(nextNodeId.toString().equals(itself.getIdentifier())){
+					DSLogger.logAdmin("HandleCommand", "run","Putting up hashed key:"+key+" and value:"+value);
+					KVStoreOperation operation=new KVStoreOperation(key,value, KVStoreOperation.OperationType.PUT);
+					operationQueue.put(operation);	
+				}else{
+					DSLogger.logAdmin("HandleCommand", "run","Contacting "+nextNodeId+" for Putting up hashed key:"+key+" and value:"+value);
+					DSocket sendMerge = new DSocket(aliveMembers.get(nextNodeId+"").getAddress().getHostAddress(), aliveMembers.get(nextNodeId+"").getPort());
+					List<Object>  objList= new ArrayList<Object>();
+					objList.add("put");
+					objList.add(key);
+					objList.add(value);
+					sendMerge.writeObjectList(objList);
+				}
+							
 			}
 			else if(cmd.equals("update")){
 				Integer key= (Integer)argList.get(1);
