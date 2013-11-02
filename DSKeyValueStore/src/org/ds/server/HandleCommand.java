@@ -67,7 +67,7 @@ public class HandleCommand implements Runnable{
 				DSocket sendMerge = new DSocket(aliveMembers.get(nextNodeId+"").getAddress().getHostAddress(), aliveMembers.get(nextNodeId+"").getPort());
 				List<Object>  objList= new ArrayList<Object>();
 				objList.add("partition");
-				objList.add(Integer.parseInt(newMember.getIdentifier()));
+				objList.add(newMember);
 				sendMerge.writeObjectList(objList);
 				
 			}
@@ -112,9 +112,16 @@ public class HandleCommand implements Runnable{
 				operationQueue.put(operation);				
 			}
 			else if(cmd.equals("partition")){
-				Integer newMember = (Integer)argList.get(1);
-				KVStoreOperation operation=new KVStoreOperation(newMember, KVStoreOperation.OperationType.PARTITION);
+				Member newMember = (Member)argList.get(1);
+				Integer newMemberId = Integer.parseInt(newMember.getIdentifier());
+				KVStoreOperation operation=new KVStoreOperation(newMemberId, KVStoreOperation.OperationType.PARTITION);
 				operationQueue.put(operation);
+				Object partitionedMap = resultQueue.take();
+				DSocket sendMerge = new DSocket(newMember.getAddress().getHostAddress(), newMember.getPort());
+				List<Object>  objList= new ArrayList<Object>();
+				objList.add("merge");
+				objList.add(partitionedMap);
+				sendMerge.writeObjectList(objList);
 			}
 			else if(cmd.equals("merge")){
 				HashMap<Integer, Object> recievedKeys = (HashMap<Integer, Object>)argList.get(1);

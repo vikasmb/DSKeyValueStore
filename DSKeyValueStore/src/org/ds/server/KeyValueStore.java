@@ -35,7 +35,7 @@ public class KeyValueStore implements Runnable {
 		while (true) {
 			try {
 				oper = operationQueue.take();
-				resultQueue.put(performOperation(oper)); // TO-DO: Enhance to
+				performOperation(oper); // TO-DO: Enhance to
 															// put operation id
 															// to enable
 															// multiple threads
@@ -48,7 +48,7 @@ public class KeyValueStore implements Runnable {
 
 	}
 
-	private Object performOperation(KVStoreOperation oper) {
+	private void performOperation(KVStoreOperation oper) {
 		DSLogger.logAdmin("KeyValueStore", "performOperation",
 				"Entered performOperation");
 		Object retValue = null;
@@ -137,7 +137,7 @@ public class KeyValueStore implements Runnable {
 			break;
 
 		}
-		return retValue;
+//		return retValue;
 	}
 
 }
