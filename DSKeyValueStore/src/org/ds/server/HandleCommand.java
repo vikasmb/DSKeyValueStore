@@ -64,7 +64,7 @@ public class HandleCommand implements Runnable{
 				DSLogger.logAdmin("Node", "listenToCommands", "Asking next node "+nextNodeId+" to send its keys ");
 				Member nextNode = aliveMembers.get(nextNodeId+"");
 				
-				DSocket sendMerge = new DSocket(aliveMembers.get(nextNode).getAddress().getHostAddress(), aliveMembers.get(nextNode).getPort());
+				DSocket sendMerge = new DSocket(aliveMembers.get(nextNode.getIdentifier()).getAddress().getHostAddress(), aliveMembers.get(nextNode).getPort());
 				List<Object>  objList= new ArrayList<Object>();
 				objList.add("partition");
 				objList.add(Integer.parseInt(newMember.getIdentifier()));
