@@ -34,16 +34,13 @@ public class HandleCommand implements Runnable{
 		} catch (UnknownHostException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
+		} catch (IOException e) {			
 			e.printStackTrace();
 		}
 	}
 	
 	public void run(){
 		try{
-			/*InputStream in = socket.getIn();
-			ObjectInputStream ois = new ObjectInputStream(in);*/
 			DSLogger.logAdmin(this.getClass().getName(), "run","Entering");
 			synchronized (lock) {
 				sortedAliveMembers = this.constructSortedMap(aliveMembers);
@@ -89,7 +86,29 @@ public class HandleCommand implements Runnable{
 				KVStoreOperation operation=new KVStoreOperation(key, KVStoreOperation.OperationType.GET);
 				operationQueue.put(operation);
 				Object value=resultQueue.take();
-				//Whether to return back to node or to send it to requester node directly.
+				socket.writeObject(value);
+				//Send it to requester node directly as doing it in Node would resulting in blocking situation 
+				// in which case node class would not be able to serve other requests.
+			}
+			else if(cmd.equals("put")){
+				Integer key= (Integer)argList.get(1);
+				Object value=(Object)argList.get(2);
+				DSLogger.logAdmin("HandleCommand", "run","Putting up hashed key:"+key+" and value:"+value);
+				KVStoreOperation operation=new KVStoreOperation(key,value, KVStoreOperation.OperationType.PUT);
+				operationQueue.put(operation);				
+			}
+			else if(cmd.equals("update")){
+				Integer key= (Integer)argList.get(1);
+				Object value=(Object)argList.get(2);
+				DSLogger.logAdmin("HandleCommand", "run","Updating for hashed key:"+key+" and new value:"+value);
+				KVStoreOperation operation=new KVStoreOperation(key,value, KVStoreOperation.OperationType.UPDATE);
+				operationQueue.put(operation);				
+			}
+			else if(cmd.equals("delete")){
+				Integer key= (Integer)argList.get(1);		
+				DSLogger.logAdmin("HandleCommand", "run","Deleting object for hashed key:"+key);
+				KVStoreOperation operation=new KVStoreOperation(key, KVStoreOperation.OperationType.DELETE);
+				operationQueue.put(operation);				
 			}
 			else if(cmd.equals("partition")){
 				Integer newMember = (Integer)argList.get(1);

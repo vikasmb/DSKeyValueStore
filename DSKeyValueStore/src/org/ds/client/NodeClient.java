@@ -36,6 +36,7 @@ public class NodeClient {
 		options.addOption("i", false, "insert");
 		options.addOption("u", false, "update");
 		options.addOption("d", false, "delete");
+		options.addOption("q", false, "quit");
 		options.addOption("s", false, "show");
 		System.setProperty("logfile.name", "./machine.log");
 		CommandLineParser parser = new PosixParser();
@@ -56,42 +57,48 @@ public class NodeClient {
 			value = cmd.getOptionValue("v");
 		}
 
+		NodeClient client = new NodeClient();
 		if (cmd.hasOption("l")) {
 			// Invoke the insert method on NodeClient
-			NodeClient client = new NodeClient();
+		
 			client.lookup(key);
 		}
 
 		else if (cmd.hasOption("i")) {
 			// Invoke the insert method on NodeClient
-			NodeClient client = new NodeClient();
 			client.insert(key, value);
 		}
 
 		else if (cmd.hasOption("u")) {
 			// Invoke the update method on NodeClient
-			NodeClient client = new NodeClient();
 			client.update(key, value);
 		}
 
 		else if (cmd.hasOption("d")) {
 			// Invoke the update method on NodeClient
-			NodeClient client = new NodeClient();
 			client.delete(key);
 		}
 
 		else if (cmd.hasOption("s")) {
 			// Invoke the update method on NodeClient
-			NodeClient client = new NodeClient();
 			client.show();
+		}
+		else if(cmd.hasOption("q")){
+			client.quit();
 		}
 
 	}
 
+	private void quit() {
+		List<Object> objList = new ArrayList<Object>();
+		objList.add(new String("leave"));
+		invokeCommand(objList, true);
+	}
+
 	private void show() {
-		List<String> strList = new ArrayList<String>();
-		strList.add("command~!" + "retrieve");
-		//invokeCommand(strList);
+		List<Object> objList = new ArrayList<Object>();
+		objList.add(new String("display"));
+		invokeCommand(objList, true);
 	}
 
 	public Object lookup(Integer key) {
@@ -99,32 +106,30 @@ public class NodeClient {
 		objList.add(new String("get"));
 		objList.add(key);
 		invokeCommand(objList, true);
-		//.add("command~!" + "insert");
-		//invokeCommand(strList,);
 		return null;
 	}
 
 	public void insert(Integer key, String value) {
-		List<String> strList = new ArrayList<String>();
-		strList.add("key~!" + key);
-		strList.add("value~!" + value);
-		strList.add("command~!" + "insert");
-		//invokeCommand(strList,false);
+		List<Object> objList = new ArrayList<Object>();
+		objList.add(new String("put"));
+		objList.add(key);
+		objList.add(value);
+		invokeCommand(objList, true);
 	}
 
 	public void update(Integer key, String new_value) {
-		List<String> strList = new ArrayList<String>();
-		strList.add("key~!" + key);
-		strList.add("value~!" + new_value);
-		strList.add("command~!" + "update");
-		//invokeCommand(strList,false);
+		List<Object> objList = new ArrayList<Object>();
+		objList.add(new String("update"));
+		objList.add(key);
+		objList.add(new_value);
+		invokeCommand(objList, true);
 	}
 
 	public void delete(Integer key) {
-		List<String> strList = new ArrayList<String>();
-		strList.add("key~!" + key);
-		strList.add("command~!" + "insert");
-		//invokeCommand(strList,false);
+		List<Object> objList = new ArrayList<Object>();
+		objList.add(new String("delete"));
+		objList.add(key);
+		invokeCommand(objList,false);
 	}
 
 	private Object invokeCommand(List<Object> objList,
