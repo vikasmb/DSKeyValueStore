@@ -20,15 +20,17 @@ public class HandleCommand implements Runnable{
 	BlockingQueue<KVStoreOperation> operationQueue;
 	BlockingQueue<Object> resultQueue;
 	Object lock;
+	Member itself;
 	
 	public HandleCommand(Socket s, HashMap<String, Member> aliveMembers, Object lock,BlockingQueue<KVStoreOperation> operationQueue,
-			BlockingQueue<Object> resultQueue){
+			BlockingQueue<Object> resultQueue, Member itself){
 		try {
 			socket = new DSocket(s);
 			this.aliveMembers = aliveMembers;
 			this.lock = lock;
 			this.operationQueue=operationQueue;
 			this.resultQueue=resultQueue;
+			this.itself = itself;
 		} catch (UnknownHostException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -61,22 +63,23 @@ public class HandleCommand implements Runnable{
 				}
 				DSLogger.log("Node", "listenToCommands", "Asking next node to send its keys ");
 				Integer newMemberHashId = Integer.parseInt(newMember.getIdentifier());
-				Integer previousNode = sortedAliveMembers.lowerKey(newMemberHashId)==null?sortedAliveMembers.lastKey():sortedAliveMembers.lowerKey(newMemberHashId);
-				KVStoreOperation operation=new KVStoreOperation(previousNode, KVStoreOperation.OperationType.MERGE);
-				operationQueue.put(operation);
+				Integer nextNodeId = sortedAliveMembers.higherKey(newMemberHashId)==null?sortedAliveMembers.firstKey():sortedAliveMembers.higherKey(newMemberHashId);
+				Member nextNode = aliveMembers.get(nextNodeId+"");
+				
+				DSocket sendMerge = new DSocket(aliveMembers.get(nextNode).getAddress().getHostAddress(), aliveMembers.get(nextNode).getPort());
+				List<Object>  objList= new ArrayList<Object>();
+				objList.add("partition");
+				objList.add(Integer.parseInt(newMember.getIdentifier()));
+				sendMerge.writeObjectList(objList);
 				
 			}
 			else if(cmd.equals("leave")){
-				Member newMember = (Member) argList.get(1);
-				synchronized (lock) {
-					aliveMembers.put(newMember.getIdentifier(), newMember);
-					DSLogger.log("Node", "listenToCommands", "Received join request from "+newMember.getIdentifier());
-					
-				}
-				DSLogger.log("Node", "listenToCommands", "Asking next node to send its keys ");
-				Integer newMemberHashId = Integer.parseInt(newMember.getIdentifier());
-				Integer previousNode = sortedAliveMembers.lowerKey(newMemberHashId)==null?sortedAliveMembers.lastKey():sortedAliveMembers.lowerKey(newMemberHashId);
-				KVStoreOperation operation=new KVStoreOperation(previousNode, KVStoreOperation.OperationType.MERGE);
+				Integer itselfId = Integer.parseInt(itself.getIdentifier());
+				DSLogger.log("Node", "listenToCommands", "Leaving group");
+				Integer nextNodeId = sortedAliveMembers.higherKey(itselfId)==null?sortedAliveMembers.firstKey():sortedAliveMembers.higherKey(itselfId);
+				DSLogger.log("Node", "listenToCommands", "Sending keys to next node "+nextNodeId);
+				
+				KVStoreOperation operation=new KVStoreOperation(nextNodeId, KVStoreOperation.OperationType.MERGE);
 				operationQueue.put(operation);
 				
 			}
@@ -87,6 +90,16 @@ public class HandleCommand implements Runnable{
 				operationQueue.put(operation);
 				Object value=resultQueue.take();
 				//Whether to return back to node or to send it to requester node directly.
+			}
+			else if(cmd.equals("partition")){
+				Integer newMember = (Integer)argList.get(1);
+				KVStoreOperation operation=new KVStoreOperation(newMember, KVStoreOperation.OperationType.PARTITION);
+				operationQueue.put(operation);
+			}
+			else if(cmd.equals("merge")){
+				HashMap<Integer, Object> recievedKeys = (HashMap<Integer, Object>)argList.get(1);
+				KVStoreOperation operation=new KVStoreOperation(recievedKeys, KVStoreOperation.OperationType.MERGE);
+				operationQueue.put(operation);
 			}
 			
 		}catch(Exception e){
