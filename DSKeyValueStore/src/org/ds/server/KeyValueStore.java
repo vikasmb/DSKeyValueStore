@@ -106,6 +106,13 @@ public class KeyValueStore implements Runnable {
 			}
 			break;
 
+		case MERGE:
+			DSLogger.logAdmin("KeyValueStore", "performOperation",
+					"Merging map received from previous node");
+			Map<Integer,Object> mapToBeMerged=oper.getMapToBeMerged();
+			keyValueStore.putAll(mapToBeMerged);
+			break;
+
 		}
 		return retValue;
 	}
