@@ -53,14 +53,15 @@ public class HandleCommand implements Runnable{
 			 * */
 			if(cmd.equals("joinMe")){
 				Member newMember = (Member) argList.get(1);
+				String memberId = newMember.getIdentifier()+"";
 				synchronized (lock) {
-					aliveMembers.put(newMember.getIdentifier(), newMember);
-					DSLogger.log("Node", "listenToCommands", "Received join request from "+newMember.getIdentifier());
+					aliveMembers.put(memberId, newMember);
+					DSLogger.logAdmin("Node", "listenToCommands", "Received join request from "+newMember.getIdentifier());
 					
 				}
-				DSLogger.log("Node", "listenToCommands", "Asking next node to send its keys ");
 				Integer newMemberHashId = Integer.parseInt(newMember.getIdentifier());
 				Integer nextNodeId = sortedAliveMembers.higherKey(newMemberHashId)==null?sortedAliveMembers.firstKey():sortedAliveMembers.higherKey(newMemberHashId);
+				DSLogger.logAdmin("Node", "listenToCommands", "Asking next node "+nextNodeId+" to send its keys ");
 				Member nextNode = aliveMembers.get(nextNodeId+"");
 				
 				DSocket sendMerge = new DSocket(aliveMembers.get(nextNode).getAddress().getHostAddress(), aliveMembers.get(nextNode).getPort());

@@ -5,6 +5,7 @@ import java.net.InetAddress;
 import java.util.Date;
 
 import org.ds.hash.Hash;
+import org.ds.logger.DSLogger;
 
 /**
  * @author pjain11, mallapu2
@@ -28,6 +29,7 @@ public class Member implements Serializable{
 		this.address = address;
 		this.heartBeat = 0;
 		this.identifier = Hash.doHash(id+"#"+address.getHostAddress())+"";
+		DSLogger.logAdmin("Member", "Member", "New Member created with id "+identifier);
 		this.timeStamp = new Date().getTime();
 		this.port = port;
 	}
