@@ -88,6 +88,7 @@ public class KeyValueStore implements Runnable {
 			Integer nodeKey = oper.getKey();
 			Map<Integer, Object> newMap = new HashMap<Integer, Object>();
 			Set<Integer> origKeys = new HashSet<Integer>(keyValueStore.keySet());
+			DSLogger.logAdmin("KeyValueStore", "performOperation","Original keyset of size:" + origKeys.size());
 			Collections.sort(new ArrayList<Integer>(origKeys));
 			for (Integer key : origKeys) {
 				if (key > nodeKey) {
@@ -100,6 +101,7 @@ public class KeyValueStore implements Runnable {
 				}
 			}
 			try {
+				DSLogger.logAdmin("KeyValueStore", "performOperation","Putting hashmap of size:" + newMap.size());
 				resultQueue.put(newMap);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
