@@ -80,7 +80,7 @@ public class Node {
 		DSLogger.logAdmin("Node", "main", "Node with id " + id + " started with port: " + port);
 		//Start Storage service here in a separate thread
 		
-		Thread kvStoreThread=new Thread(new KeyValueStore(node.operationQueue,node.resultQueue));
+		Thread kvStoreThread=new Thread(new KeyValueStore(node.operationQueue,node.resultQueue, node.itself));
 		kvStoreThread.start();
 		node.joinNetwork();
 		

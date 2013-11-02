@@ -16,15 +16,15 @@ import org.ds.member.Member;
 public class KeyValueStore implements Runnable {
 	BlockingQueue<KVStoreOperation> operationQueue = null;
 	BlockingQueue<Object> resultQueue = null;
-
+	Member itself;
 	BlockingQueue<KVStoreOperation> oper = null;
 	private Map<Integer, Object> keyValueStore = new HashMap<Integer, Object>();
 
-	public KeyValueStore(BlockingQueue<KVStoreOperation> operationQueue,
-			BlockingQueue<Object> resultQueue) {
+	public KeyValueStore(BlockingQueue<KVStoreOperation> operationQueue, BlockingQueue<Object> resultQueue, Member itself) {
 		super();
 		this.operationQueue = operationQueue;
 		this.resultQueue = resultQueue;
+		this.itself = itself;
 		keyValueStore.put(new Integer(250), "Test found");
 	}
 
@@ -85,20 +85,41 @@ public class KeyValueStore implements Runnable {
 					"Partitioning key value store until key:" + oper.getKey());
 			// Sort the keyvalue store and return the set until the key of the
 			// new node.
-			Integer nodeKey = oper.getKey();
+			Integer minNodeKey = oper.getKey();
+			Integer maxNodeKey = Integer.parseInt(itself.getIdentifier());
 			Map<Integer, Object> newMap = new HashMap<Integer, Object>();
 			Set<Integer> origKeys = new HashSet<Integer>(keyValueStore.keySet());
 			DSLogger.logAdmin("KeyValueStore", "performOperation","Original keyset of size:" + origKeys.size());
-			Collections.sort(new ArrayList<Integer>(origKeys));
+			//Collections.sort(new ArrayList<Integer>(origKeys));
 			for (Integer key : origKeys) {
-				if (key > nodeKey) {
+				if(minNodeKey > maxNodeKey){
+					if( (key > minNodeKey && key<= 0) 
+							|| (key>0 && key <=maxNodeKey)){
+						continue;
+					}else{
+						Object value = keyValueStore.get(key);
+						keyValueStore.remove(key);
+						newMap.put(key, value);
+					}
+				}else{
+					if(key > minNodeKey && key <= maxNodeKey){
+						continue;
+					}else{
+						Object value = keyValueStore.get(key);
+						keyValueStore.remove(key);
+						newMap.put(key, value);
+					}
+				}
+				
+				
+				/*if (key > nodeKey) {
 					break;
 				} else {
 					Object value = keyValueStore.get(key);
 					keyValueStore.remove(key);
 					newMap.put(key, value);
 
-				}
+				}*/
 			}
 			try {
 				DSLogger.logAdmin("KeyValueStore", "performOperation","Putting hashmap of size:" + newMap.size());
