@@ -117,6 +117,8 @@ public class Node {
 				cmd.add("joinMe");
 				cmd.add(itself);
 				joinRequest.writeObjectList(cmd);
+				Member dummyContact = new Member(InetAddress.getByName(contactMachineIP), "1", 3456);
+				aliveMembers.put(dummyContact.getIdentifier(), dummyContact);
 	/*			OutputStream out = joinRequest.getOut();
 				ObjectOutputStream ois = new ObjectOutputStream(out);
 				ois.writeObject(cmd);
