@@ -113,16 +113,15 @@ public class KeyValueStore implements Runnable {
 						newMap.put(key, value);
 					}
 				}
+				try {
+					DSLogger.logAdmin("KeyValueStore", "performOperation","Putting hashmap of size:" + newMap.size());
+					resultQueue.put(newMap);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				break;
 				
 				
-				/*if (key > nodeKey) {
-					break;
-				} else {
-					Object value = keyValueStore.get(key);
-					keyValueStore.remove(key);
-					newMap.put(key, value);
-
-				}*/
 			}
 		case DISPLAY:
 			DSLogger.logAdmin("KeyValueStore", "performOperation",
