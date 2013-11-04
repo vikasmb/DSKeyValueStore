@@ -6,6 +6,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.BlockingQueue;
 
@@ -168,7 +169,7 @@ public class HandleCommand implements Runnable{
 				DSLogger.logAdmin("HandleCommand", "run","Entered delete operation on node "+itself.getIdentifier());
 
 				Integer nextNodeId = sortedAliveMembers.higherKey(key)==null?sortedAliveMembers.firstKey():sortedAliveMembers.higherKey(key);
-				
+				DSLogger.logAdmin("HandleCommand", "run","Deleting object for key "+key+" in node number: "+nextNodeId);
 				if(nextNodeId.toString().equals(itself.getIdentifier())){
 					DSLogger.logAdmin("HandleCommand", "run","Deleting object in local key store for hashed key:"+key);
 					KVStoreOperation operation=new KVStoreOperation(key, KVStoreOperation.OperationType.DELETE);
@@ -208,7 +209,10 @@ public class HandleCommand implements Runnable{
 				KVStoreOperation operation=new KVStoreOperation(-1, KVStoreOperation.OperationType.DISPLAY);
 				operationQueue.put(operation);
 				Object value=resultQueue.take();
-				socket.writeObject(value);
+				Map<Integer,Object> map=(Map<Integer,Object>)value;
+				map.put(-1, itself.getIdentifier()); //This key is only used for display purpose at client
+				socket.writeObject(map);
+				
 				
 			}
 			

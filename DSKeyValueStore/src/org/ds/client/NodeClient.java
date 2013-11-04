@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -87,8 +88,11 @@ public class NodeClient {
 
 		else if (cmd.hasOption("s")) {
 			// Invoke the update method on NodeClient
-			Object objValue=client.show();
-			System.out.println("Local Hashmap:"+objValue);
+			Map<Integer,Object> objMap=(Map<Integer,Object>)client.show();
+			String id=(String) objMap.get(-1);
+			objMap.remove(-1);
+			System.out.println("At node id: "+id);
+			System.out.println("Local Hashmap:"+objMap);
 		}
 		else if(cmd.hasOption("q")){
 			client.quit();
