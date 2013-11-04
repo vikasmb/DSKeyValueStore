@@ -156,7 +156,7 @@ public class DSocket {
 		try {
 			objOutStream = new ObjectOutputStream(out);
 			objOutStream.writeObject(obj);
-			objOutStream.close();
+			objOutStream.flush();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -170,7 +170,7 @@ public class DSocket {
 			objOutStream = new ObjectOutputStream(out);
 			objOutStream.writeObject(objList);
 			
-			objOutStream.close();
+			objOutStream.flush();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
