@@ -77,8 +77,15 @@ public class HandleCommand implements Runnable{
 				Integer nextNodeId = sortedAliveMembers.higherKey(itselfId)==null?sortedAliveMembers.firstKey():sortedAliveMembers.higherKey(itselfId);
 				DSLogger.log("Node", "listenToCommands", "Sending keys to next node "+nextNodeId);
 				
-				KVStoreOperation operation=new KVStoreOperation(nextNodeId, KVStoreOperation.OperationType.MERGE);
-				operationQueue.put(operation);
+				DSocket sendMerge = new DSocket(aliveMembers.get(nextNodeId+"").getAddress().getHostAddress(), aliveMembers.get(nextNodeId+"").getPort());
+				List<Object>  objList= new ArrayList<Object>();
+				objList.add("merge");
+				objList.add(aliveMembers);
+				sendMerge.writeObjectList(objList);
+				String ack = (String)sendMerge.readObject();
+				if(ack.equals("ack")){
+					System.exit(0);
+				}
 				
 			}
 			else if(cmd.equals("get")){
@@ -156,11 +163,14 @@ public class HandleCommand implements Runnable{
 				objList.add("merge");
 				objList.add(partitionedMap);
 				sendMerge.writeObjectList(objList);
+				String ack = (String)resultQueue.take();
 			}
 			else if(cmd.equals("merge")){
 				HashMap<Integer, Object> recievedKeys = (HashMap<Integer, Object>)argList.get(1);
 				KVStoreOperation operation=new KVStoreOperation(recievedKeys, KVStoreOperation.OperationType.MERGE);
 				operationQueue.put(operation);
+				String ack = (String)resultQueue.take();
+				socket.writeObject(ack);
 			}
 			else if(cmd.equals("display")){
 				DSLogger.logAdmin("HandleCommand", "run","Retrieving local hashmap for display");
