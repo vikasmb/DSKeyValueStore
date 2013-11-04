@@ -53,6 +53,9 @@ public class KeyValueStore implements Runnable {
 			DSLogger.logAdmin("KeyValueStore", "performOperation", "got value:"
 					+ retValue);
 			try {
+				if(retValue==null){ //Key Not found
+					retValue="!#KEYNOTFOUND#!";	
+				}
 				resultQueue.put(retValue);
 			} catch (InterruptedException e1) {
 				e1.printStackTrace();
