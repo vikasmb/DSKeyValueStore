@@ -141,6 +141,12 @@ public class KeyValueStore implements Runnable {
 					"Merging map received from previous node");
 			Map<Integer,Object> mapToBeMerged=oper.getMapToBeMerged();
 			keyValueStore.putAll(mapToBeMerged);
+			try {
+				resultQueue.put("ack");
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			break;
 
 		}
