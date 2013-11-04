@@ -61,7 +61,8 @@ public class NodeClient {
 		if (cmd.hasOption("l")) {
 			// Invoke the insert method on NodeClient
 		
-			client.lookup(key);
+			Object objValue=client.lookup(key);
+			System.out.println("Object:"+objValue);
 		}
 
 		else if (cmd.hasOption("i")) {
@@ -104,9 +105,8 @@ public class NodeClient {
 	public Object lookup(Integer key) {
 		List<Object> objList = new ArrayList<Object>();
 		objList.add(new String("get"));
-		objList.add(key);
-		invokeCommand(objList, true);
-		return null;
+		objList.add(key);		
+		return invokeCommand(objList, true);
 	}
 
 	public void insert(Integer key, String value) {
@@ -139,11 +139,12 @@ public class NodeClient {
 		try {
 			DSocket server = new DSocket("127.0.0.1", PORT_NUMBER);
 			server.writeObjectList(objList);
-			/*if (waitForOutputFromServer) {
-				List<String> output = server.readMultipleLines();				
-			}*/
-			server.close();
-			return null;
+			Object output=null;
+			//if (waitForOutputFromServer) {
+				output = server.readObject();				
+			//}
+			//server.close();
+			return output;
 		} catch (UnknownHostException e) {
 			DSLogger.log("NodeClient", "invokeCommand", e.getMessage());
 		} catch (IOException e) {

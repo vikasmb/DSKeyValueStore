@@ -83,13 +83,32 @@ public class HandleCommand implements Runnable{
 			}
 			else if(cmd.equals("get")){
 				Integer key= (Integer)argList.get(1);
-				DSLogger.logAdmin("HandleCommand", "run","Looking up hashed key:"+key);
-				KVStoreOperation operation=new KVStoreOperation(key, KVStoreOperation.OperationType.GET);
-				operationQueue.put(operation);
-				Object value=resultQueue.take();
+				DSLogger.logAdmin("HandleCommand", "run","Determining location for hashed key:"+key+"by node "+itself.getIdentifier());
+				Integer nextNodeId = sortedAliveMembers.higherKey(key)==null?sortedAliveMembers.firstKey():sortedAliveMembers.higherKey(key);
+				Object value=null;
+				if(nextNodeId.toString().equals(itself.getIdentifier())){
+					DSLogger.logAdmin("HandleCommand", "run","Retrieving value for hashed key:"+key+" from local key value store");
+					KVStoreOperation operation=new KVStoreOperation(key, KVStoreOperation.OperationType.GET);
+					operationQueue.put(operation);
+					value=resultQueue.take();
+				}
+				else{
+					//Send it to requester node directly as doing it in Node would resulting in blocking situation 
+					// in which case node class would not be able to serve other requests.
+				
+					DSLogger.logAdmin("HandleCommand", "run","Contacting "+nextNodeId+" for getting hashed key:"+key);
+					DSocket nodeReqSocket = new DSocket(aliveMembers.get(nextNodeId+"").getAddress().getHostAddress(), aliveMembers.get(nextNodeId+"").getPort());
+					List<Object>  objList= new ArrayList<Object>();
+					objList.add("get");
+					objList.add(key);					
+					nodeReqSocket.writeObjectList(objList);		
+					value=nodeReqSocket.readObject();
+					nodeReqSocket.close();
+				}
+				//Write back the value to the requesting client socket
+				if(value!=null)
+				DSLogger.logAdmin("HandleCommand", "run","Writing back value"+value+" to the client socket");
 				socket.writeObject(value);
-				//Send it to requester node directly as doing it in Node would resulting in blocking situation 
-				// in which case node class would not be able to serve other requests.
 			}
 			else if(cmd.equals("put")){
 				Integer key= (Integer)argList.get(1);

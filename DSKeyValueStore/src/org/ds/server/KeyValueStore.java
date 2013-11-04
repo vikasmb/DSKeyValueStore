@@ -57,6 +57,11 @@ public class KeyValueStore implements Runnable {
 			retValue = keyValueStore.get(oper.getKey());
 			DSLogger.logAdmin("KeyValueStore", "performOperation", "got value:"
 					+ retValue);
+			try {
+				resultQueue.put(retValue);
+			} catch (InterruptedException e1) {
+				e1.printStackTrace();
+			}
 			break;
 		case PUT:
 			DSLogger.logAdmin(
