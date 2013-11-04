@@ -209,11 +209,11 @@ public class HandleCommand implements Runnable{
 				KVStoreOperation operation=new KVStoreOperation(-1, KVStoreOperation.OperationType.DISPLAY);
 				operationQueue.put(operation);
 				Object value=resultQueue.take();
+				DSLogger.logAdmin("HandleCommand", "run", "Display Map received in Handle Command");
 				Map<Integer,Object> map=(Map<Integer,Object>)value;
 				map.put(-1, itself.getIdentifier()); //This key is only used for display purpose at client
+				DSLogger.logAdmin("HandleCommand", "run", "Sending map to node client of size "+map.size());
 				socket.writeObject(map);
-				
-				
 			}
 			
 		}catch(Exception e){
@@ -221,6 +221,7 @@ public class HandleCommand implements Runnable{
 		}finally{
 			try {
 				socket.close();
+				DSLogger.logAdmin("HandleCommand", "run", "Exiting...");
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

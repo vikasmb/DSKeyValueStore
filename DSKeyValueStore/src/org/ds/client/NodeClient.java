@@ -89,6 +89,7 @@ public class NodeClient {
 		else if (cmd.hasOption("s")) {
 			// Invoke the update method on NodeClient
 			Map<Integer,Object> objMap=(Map<Integer,Object>)client.show();
+			DSLogger.logAdmin("NodeClient", "main", "Received object in main "+objMap);
 			String id=(String) objMap.get(-1);
 			objMap.remove(-1);
 			System.out.println("At node id: "+id);
@@ -154,6 +155,7 @@ public class NodeClient {
 				output = server.readObject();				
 			//}
 			server.close();
+			DSLogger.logAdmin("NodeClient", "invokeCommand", "Received object "+output);
 			return output;
 		} catch (UnknownHostException e) {
 			DSLogger.log("NodeClient", "invokeCommand", e.getMessage());
