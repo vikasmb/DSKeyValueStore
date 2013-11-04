@@ -82,7 +82,8 @@ public class NodeClient {
 
 		else if (cmd.hasOption("s")) {
 			// Invoke the update method on NodeClient
-			client.show();
+			Object objValue=client.show();
+			System.out.println("Local Hashmap:"+objValue);
 		}
 		else if(cmd.hasOption("q")){
 			client.quit();
@@ -96,10 +97,10 @@ public class NodeClient {
 		invokeCommand(objList, true);
 	}
 
-	private void show() {
+	private Object show() {
 		List<Object> objList = new ArrayList<Object>();
 		objList.add(new String("display"));
-		invokeCommand(objList, true);
+		return invokeCommand(objList, true);
 	}
 
 	public Object lookup(Integer key) {
@@ -143,7 +144,7 @@ public class NodeClient {
 			//if (waitForOutputFromServer) {
 				output = server.readObject();				
 			//}
-			//server.close();
+			server.close();
 			return output;
 		} catch (UnknownHostException e) {
 			DSLogger.log("NodeClient", "invokeCommand", e.getMessage());

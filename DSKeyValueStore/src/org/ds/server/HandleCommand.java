@@ -162,6 +162,14 @@ public class HandleCommand implements Runnable{
 				KVStoreOperation operation=new KVStoreOperation(recievedKeys, KVStoreOperation.OperationType.MERGE);
 				operationQueue.put(operation);
 			}
+			else if(cmd.equals("display")){
+				DSLogger.logAdmin("HandleCommand", "run","Retrieving local hashmap for display");
+				KVStoreOperation operation=new KVStoreOperation(-1, KVStoreOperation.OperationType.DISPLAY);
+				operationQueue.put(operation);
+				Object value=resultQueue.take();
+				socket.writeObject(value);
+				
+			}
 			
 		}catch(Exception e){
 			e.printStackTrace();

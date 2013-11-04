@@ -36,7 +36,8 @@ public class KVStoreOperation {
 		UPDATE,
 		DELETE,
 		MERGE,
-		PARTITION
+		PARTITION,
+		DISPLAY
 	}
 	
 	

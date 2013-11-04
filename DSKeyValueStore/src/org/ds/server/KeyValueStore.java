@@ -1,13 +1,9 @@
 package org.ds.server;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.concurrent.BlockingQueue;
 
 import org.ds.logger.DSLogger;
@@ -25,7 +21,6 @@ public class KeyValueStore implements Runnable {
 		this.operationQueue = operationQueue;
 		this.resultQueue = resultQueue;
 		this.itself = itself;
-		keyValueStore.put(new Integer(250), "Test found");
 	}
 
 	@Override
@@ -126,9 +121,13 @@ public class KeyValueStore implements Runnable {
 
 				}*/
 			}
+		case DISPLAY:
+			DSLogger.logAdmin("KeyValueStore", "performOperation",
+					"Display local hashmap of size:" + keyValueStore.size());
 			try {
-				DSLogger.logAdmin("KeyValueStore", "performOperation","Putting hashmap of size:" + newMap.size());
-				resultQueue.put(newMap);
+				Map<Integer,Object> displayMap=new HashMap<Integer,Object>();
+				displayMap.putAll(keyValueStore);
+				resultQueue.put(displayMap);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
