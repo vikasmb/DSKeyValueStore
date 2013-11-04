@@ -142,15 +142,46 @@ public class HandleCommand implements Runnable{
 			else if(cmd.equals("update")){
 				Integer key= (Integer)argList.get(1);
 				Object value=(Object)argList.get(2);
-				DSLogger.logAdmin("HandleCommand", "run","Updating for hashed key:"+key+" and new value:"+value);
-				KVStoreOperation operation=new KVStoreOperation(key,value, KVStoreOperation.OperationType.UPDATE);
-				operationQueue.put(operation);				
+
+				DSLogger.logAdmin("HandleCommand", "run","Entered update operation on node "+itself.getIdentifier());
+				
+				Integer nextNodeId = sortedAliveMembers.higherKey(key)==null?sortedAliveMembers.firstKey():sortedAliveMembers.higherKey(key);
+				
+				if(nextNodeId.toString().equals(itself.getIdentifier())){
+					DSLogger.logAdmin("HandleCommand", "run","Updating for hashed key:"+key+" and new value:"+value);
+					KVStoreOperation operation=new KVStoreOperation(key,value, KVStoreOperation.OperationType.UPDATE);
+					operationQueue.put(operation);			
+				}
+				else{
+					DSLogger.logAdmin("HandleCommand", "run","Contacting "+nextNodeId+" for updating  hashed key:"+key+" and new value:"+value);
+					DSocket updateMerge = new DSocket(aliveMembers.get(nextNodeId+"").getAddress().getHostAddress(), aliveMembers.get(nextNodeId+"").getPort());
+					List<Object>  objList= new ArrayList<Object>();
+					objList.add("update");
+					objList.add(key);
+					objList.add(value);
+					updateMerge.writeObjectList(objList);
+				}
 			}
 			else if(cmd.equals("delete")){
-				Integer key= (Integer)argList.get(1);		
-				DSLogger.logAdmin("HandleCommand", "run","Deleting object for hashed key:"+key);
-				KVStoreOperation operation=new KVStoreOperation(key, KVStoreOperation.OperationType.DELETE);
-				operationQueue.put(operation);				
+				Integer key= (Integer)argList.get(1);	
+
+				DSLogger.logAdmin("HandleCommand", "run","Entered delete operation on node "+itself.getIdentifier());
+
+				Integer nextNodeId = sortedAliveMembers.higherKey(key)==null?sortedAliveMembers.firstKey():sortedAliveMembers.higherKey(key);
+				
+				if(nextNodeId.toString().equals(itself.getIdentifier())){
+					DSLogger.logAdmin("HandleCommand", "run","Deleting object in local key store for hashed key:"+key);
+					KVStoreOperation operation=new KVStoreOperation(key, KVStoreOperation.OperationType.DELETE);
+					operationQueue.put(operation);				
+				}
+				else{
+					DSLogger.logAdmin("HandleCommand", "run","Contacting "+nextNodeId+" for deleting  hashed key:"+key);
+					DSocket deleteContact = new DSocket(aliveMembers.get(nextNodeId+"").getAddress().getHostAddress(), aliveMembers.get(nextNodeId+"").getPort());
+					List<Object>  objList= new ArrayList<Object>();
+					objList.add("delete");
+				    objList.add(key);				
+				    deleteContact.writeObjectList(objList);
+				}
 			}
 			else if(cmd.equals("partition")){
 				Member newMember = (Member)argList.get(1);

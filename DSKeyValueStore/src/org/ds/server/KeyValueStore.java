@@ -53,6 +53,9 @@ public class KeyValueStore implements Runnable {
 			DSLogger.logAdmin("KeyValueStore", "performOperation", "got value:"
 					+ retValue);
 			try {
+				if(retValue==null){ //Key Not found
+					retValue="!#KEYNOTFOUND#!";	
+				}
 				resultQueue.put(retValue);
 			} catch (InterruptedException e1) {
 				e1.printStackTrace();
@@ -138,6 +141,12 @@ public class KeyValueStore implements Runnable {
 					"Merging map received from previous node");
 			Map<Integer,Object> mapToBeMerged=oper.getMapToBeMerged();
 			keyValueStore.putAll(mapToBeMerged);
+			try {
+				resultQueue.put("ack");
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			break;
 
 		}

@@ -62,7 +62,12 @@ public class NodeClient {
 			// Invoke the insert method on NodeClient
 		
 			Object objValue=client.lookup(key);
-			System.out.println("Object:"+objValue);
+			if(objValue instanceof String && objValue.toString().equals("!#KEYNOTFOUND#!")){
+				System.out.println("Entered key not found in the distributed key value store");
+			}
+			else{
+				System.out.println("Object:"+objValue);
+			}
 		}
 
 		else if (cmd.hasOption("i")) {
