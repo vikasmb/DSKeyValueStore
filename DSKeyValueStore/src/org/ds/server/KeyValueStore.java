@@ -147,9 +147,20 @@ public class KeyValueStore implements Runnable {
 				e.printStackTrace();
 			}
 			break;
-
+			
+		case LEAVE:
+			try{
+			DSLogger.logAdmin("KeyValueStore", "performOperation",
+					"Leave command received");
+			Map<Integer,Object> mapToBeSent=new HashMap<Integer,Object>();
+			mapToBeSent.putAll(keyValueStore);
+			resultQueue.put(mapToBeSent);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
 		}
+
+		break;
 //		return retValue;
 	}
-
+ }
 }

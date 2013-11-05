@@ -37,6 +37,7 @@ public class KVStoreOperation {
 		DELETE,
 		MERGE,
 		PARTITION,
+		LEAVE,
 		DISPLAY
 	}
 	
