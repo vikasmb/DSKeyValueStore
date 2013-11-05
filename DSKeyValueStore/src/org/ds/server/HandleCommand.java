@@ -76,12 +76,17 @@ public class HandleCommand implements Runnable{
 				Integer itselfId = Integer.parseInt(itself.getIdentifier());
 				DSLogger.logAdmin("Node", "listenToCommands", "Leaving group");
 				Integer nextNodeId = sortedAliveMembers.higherKey(itselfId)==null?sortedAliveMembers.firstKey():sortedAliveMembers.higherKey(itselfId);
-				DSLogger.logAdmin("Node", "listenToCommands", "Sending keys to next node "+nextNodeId);
 				
+				DSLogger.logAdmin("Node", "listenToCommands", "Contacting key value store locally to get keys");
+				KVStoreOperation operation=new KVStoreOperation(-1, KVStoreOperation.OperationType.LEAVE);
+				operationQueue.put(operation);
+				HashMap<Integer, Object> keyValueStore = (HashMap<Integer, Object>)resultQueue.take();
+				
+				DSLogger.logAdmin("Node", "listenToCommands", "Sending keys to next node "+nextNodeId);
 				DSocket sendMerge = new DSocket(aliveMembers.get(nextNodeId+"").getAddress().getHostAddress(), aliveMembers.get(nextNodeId+"").getPort());
 				List<Object>  objList= new ArrayList<Object>();
 				objList.add("merge");
-				objList.add(aliveMembers);
+				objList.add(keyValueStore);
 				sendMerge.writeObjectList(objList);
 				String ack = (String)sendMerge.readObject();
 				if(ack.equals("ack")){
