@@ -90,6 +90,8 @@ public class KeyValueStore implements Runnable {
 			// new node.
 			Integer minNodeKey = oper.getKey();
 			Integer maxNodeKey = Integer.parseInt(itself.getIdentifier());
+			DSLogger.logAdmin("KeyValueStore", "performOperation",
+					"Partitioning key value store in range :" + minNodeKey+" - "+maxNodeKey);
 			Map<Integer, Object> newMap = new HashMap<Integer, Object>();
 			Set<Integer> origKeys = new HashSet<Integer>(keyValueStore.keySet());
 			DSLogger.logAdmin("KeyValueStore", "performOperation","Original keyset of size:" + origKeys.size());
