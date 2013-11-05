@@ -98,8 +98,18 @@ public class HandleCommand implements Runnable{
 			else if(cmd.equals("get")){
 				Integer key= (Integer)argList.get(1);
 				DSLogger.logAdmin("HandleCommand", "run","Determining location for hashed key:"+key+"by node "+itself.getIdentifier());
-				Integer nextNodeId = sortedAliveMembers.higherKey(key)==null?sortedAliveMembers.firstKey():sortedAliveMembers.higherKey(key);
+				Integer nextNodeId = -1;
+				//If the key's id is falling on any of the node itself
+				//then don't take higher value 
+				if(sortedAliveMembers.containsKey(key)){
+					nextNodeId = key;
+				}else{
+					nextNodeId = sortedAliveMembers.higherKey(key)==null?sortedAliveMembers.firstKey():sortedAliveMembers.higherKey(key);
+				}
+				
 				Object value=null;
+				//Contact local if the key is present locally
+				//or route the query to next node
 				if(nextNodeId.toString().equals(itself.getIdentifier())){
 					DSLogger.logAdmin("HandleCommand", "run","Retrieving value for hashed key:"+key+" from local key value store");
 					KVStoreOperation operation=new KVStoreOperation(key, KVStoreOperation.OperationType.GET);
@@ -129,7 +139,12 @@ public class HandleCommand implements Runnable{
 				Object value=(Object)argList.get(2);
 				
 				DSLogger.logAdmin("HandleCommand", "run","Entered put on node "+itself.getIdentifier());
-				Integer nextNodeId = sortedAliveMembers.higherKey(key)==null?sortedAliveMembers.firstKey():sortedAliveMembers.higherKey(key);
+				Integer nextNodeId = -1;
+				if(sortedAliveMembers.containsKey(key)){
+					nextNodeId = key;
+				}else{
+					nextNodeId = sortedAliveMembers.higherKey(key)==null?sortedAliveMembers.firstKey():sortedAliveMembers.higherKey(key);
+				}
 				
 				if(nextNodeId.toString().equals(itself.getIdentifier())){
 					DSLogger.logAdmin("HandleCommand", "run","Putting up hashed key:"+key+" and value:"+value);
@@ -152,7 +167,12 @@ public class HandleCommand implements Runnable{
 
 				DSLogger.logAdmin("HandleCommand", "run","Entered update operation on node "+itself.getIdentifier());
 				
-				Integer nextNodeId = sortedAliveMembers.higherKey(key)==null?sortedAliveMembers.firstKey():sortedAliveMembers.higherKey(key);
+				Integer nextNodeId = -1;
+				if(sortedAliveMembers.containsKey(key)){
+					nextNodeId = key;
+				}else{
+					nextNodeId = sortedAliveMembers.higherKey(key)==null?sortedAliveMembers.firstKey():sortedAliveMembers.higherKey(key);
+				}
 				
 				if(nextNodeId.toString().equals(itself.getIdentifier())){
 					DSLogger.logAdmin("HandleCommand", "run","Updating for hashed key:"+key+" and new value:"+value);
@@ -174,7 +194,13 @@ public class HandleCommand implements Runnable{
 
 				DSLogger.logAdmin("HandleCommand", "run","Entered delete operation on node "+itself.getIdentifier());
 
-				Integer nextNodeId = sortedAliveMembers.higherKey(key)==null?sortedAliveMembers.firstKey():sortedAliveMembers.higherKey(key);
+				Integer nextNodeId = -1;
+				if(sortedAliveMembers.containsKey(key)){
+					nextNodeId = key;
+				}else{
+					nextNodeId = sortedAliveMembers.higherKey(key)==null?sortedAliveMembers.firstKey():sortedAliveMembers.higherKey(key);
+				}
+				
 				DSLogger.logAdmin("HandleCommand", "run","Deleting object for key "+key+" in node number: "+nextNodeId);
 				if(nextNodeId.toString().equals(itself.getIdentifier())){
 					DSLogger.logAdmin("HandleCommand", "run","Deleting object in local key store for hashed key:"+key);
