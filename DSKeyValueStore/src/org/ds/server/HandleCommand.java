@@ -74,9 +74,9 @@ public class HandleCommand implements Runnable{
 			}
 			else if(cmd.equals("leave")){
 				Integer itselfId = Integer.parseInt(itself.getIdentifier());
-				DSLogger.log("Node", "listenToCommands", "Leaving group");
+				DSLogger.logAdmin("Node", "listenToCommands", "Leaving group");
 				Integer nextNodeId = sortedAliveMembers.higherKey(itselfId)==null?sortedAliveMembers.firstKey():sortedAliveMembers.higherKey(itselfId);
-				DSLogger.log("Node", "listenToCommands", "Sending keys to next node "+nextNodeId);
+				DSLogger.logAdmin("Node", "listenToCommands", "Sending keys to next node "+nextNodeId);
 				
 				DSocket sendMerge = new DSocket(aliveMembers.get(nextNodeId+"").getAddress().getHostAddress(), aliveMembers.get(nextNodeId+"").getPort());
 				List<Object>  objList= new ArrayList<Object>();
@@ -201,9 +201,12 @@ public class HandleCommand implements Runnable{
 			}
 			else if(cmd.equals("merge")){
 				HashMap<Integer, Object> recievedKeys = (HashMap<Integer, Object>)argList.get(1);
+				DSLogger.logAdmin("HandleCommand", "run","In merge request");
 				KVStoreOperation operation=new KVStoreOperation(recievedKeys, KVStoreOperation.OperationType.MERGE);
 				operationQueue.put(operation);
+				DSLogger.logAdmin("HandleCommand", "run","In merge request waiting for ack");
 				String ack = (String)resultQueue.take();
+				DSLogger.logAdmin("HandleCommand", "run","In merge request got "+ack);
 				socket.writeObject(ack);
 			}
 			else if(cmd.equals("display")){
