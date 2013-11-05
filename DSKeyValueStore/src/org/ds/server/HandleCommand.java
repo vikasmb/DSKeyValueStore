@@ -195,7 +195,9 @@ public class HandleCommand implements Runnable{
 				objList.add("merge");
 				objList.add(partitionedMap);
 				sendMerge.writeObjectList(objList);
-				resultQueue.take();
+				//Consuming the acknowledgment send by merging node
+				sendMerge.readObject();
+				
 			}
 			else if(cmd.equals("merge")){
 				HashMap<Integer, Object> recievedKeys = (HashMap<Integer, Object>)argList.get(1);
