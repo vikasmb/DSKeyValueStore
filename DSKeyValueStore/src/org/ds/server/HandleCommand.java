@@ -45,6 +45,7 @@ public class HandleCommand implements Runnable{
 			DSLogger.logAdmin(this.getClass().getName(), "run","Entering");
 			synchronized (lock) {
 				sortedAliveMembers = this.constructSortedMap(aliveMembers);
+				DSLogger.logAdmin(this.getClass().getName(), "run","Sorted Map :"+sortedAliveMembers);
 			}
 			List<Object> argList = (ArrayList<Object>)socket.readObject();
 			String cmd=(String) argList.get(0);
