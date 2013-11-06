@@ -39,5 +39,7 @@ public class Hash {
 		doHash("1000000");
 		doHash("check1");
 		doHash("check2");
+		doHash("sdfsdf");
+		doHash("Test123");
 	}
 }
