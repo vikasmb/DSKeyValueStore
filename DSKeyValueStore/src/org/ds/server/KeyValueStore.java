@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 
+import org.ds.hash.Hash;
 import org.ds.logger.DSLogger;
 import org.ds.member.Member;
 
@@ -96,10 +97,12 @@ public class KeyValueStore implements Runnable {
 			Set<Integer> origKeys = new HashSet<Integer>(keyValueStore.keySet());
 			DSLogger.logAdmin("KeyValueStore", "performOperation","Original keyset of size:" + origKeys.size());
 			//Collections.sort(new ArrayList<Integer>(origKeys));
+			Integer hashedKey=null;
 			for (Integer key : origKeys) {
+				hashedKey=Hash.doHash(key.toString());//Use hashedKey for partitioning the keyset. 
 				if(minNodeKey > maxNodeKey){
-					if( (key > minNodeKey && key<= 0) 
-							|| (key>0 && key <=maxNodeKey)){
+					if( (hashedKey > minNodeKey && hashedKey<= 0) 
+							|| (hashedKey>0 && hashedKey <=maxNodeKey)){
 						continue;
 					}else{
 						Object value = keyValueStore.get(key);
@@ -107,7 +110,7 @@ public class KeyValueStore implements Runnable {
 						newMap.put(key, value);
 					}
 				}else{
-					if(key > minNodeKey && key <= maxNodeKey){
+					if(hashedKey > minNodeKey && hashedKey <= maxNodeKey){
 						continue;
 					}else{
 						Object value = keyValueStore.get(key);
