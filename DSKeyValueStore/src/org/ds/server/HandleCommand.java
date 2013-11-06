@@ -155,7 +155,7 @@ public class HandleCommand implements Runnable{
 					KVStoreOperation operation=new KVStoreOperation(key,value, KVStoreOperation.OperationType.PUT);
 					operationQueue.put(operation);	
 				}else{
-					DSLogger.logAdmin("HandleCommand", "run","Contacting "+nextNodeId+" for Putting up hashed key:"+key+" and value:"+value);
+					DSLogger.logAdmin("HandleCommand", "run","Contacting "+nextNodeId+" for putting key:"+key+" and value:"+value+" since hash of the key is :"+hashedKey);
 					DSocket sendMerge = new DSocket(aliveMembers.get(nextNodeId+"").getAddress().getHostAddress(), aliveMembers.get(nextNodeId+"").getPort());
 					List<Object>  objList= new ArrayList<Object>();
 					objList.add("put");
