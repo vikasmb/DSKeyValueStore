@@ -78,12 +78,24 @@ public class NodeClient {
 
 		else if (cmd.hasOption("u")) {
 			// Invoke the update method on NodeClient
-			client.update(key, value);
+			Object objValue=client.lookup(key);
+			if(objValue instanceof String && objValue.toString().equals("!#KEYNOTFOUND#!")){
+				System.out.println("Update is not possible as the entered key is not found in the distributed key value store");
+			}
+			else{
+				client.update(key, value);
+			}
 		}
 
 		else if (cmd.hasOption("d")) {
 			// Invoke the update method on NodeClient
-			client.delete(key);
+			Object objValue=client.lookup(key);
+			if(objValue instanceof String && objValue.toString().equals("!#KEYNOTFOUND#!")){
+				System.out.println("Delete is not possible as the entered key is not found in the distributed key value store");
+			}
+			else{
+				client.delete(key);
+			}
 		}
 
 		else if (cmd.hasOption("s")) {

@@ -52,6 +52,7 @@ public class Node {
 			itself = new Member(InetAddress.getByName(getLocalIP()), id, port);
 			aliveMembers.put(itself.getIdentifier(), itself);
 			DSLogger.log("Node", "Node", "Member with id " + itself.getIdentifier() + " joined");
+			System.out.println("This node is hashed to position: "+itself.getIdentifier());
 
 		} catch (SocketException e) {
 			e.printStackTrace();
