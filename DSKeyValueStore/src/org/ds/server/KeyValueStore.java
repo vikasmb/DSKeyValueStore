@@ -101,9 +101,15 @@ public class KeyValueStore implements Runnable {
 			for (Integer key : origKeys) {
 				hashedKey=Hash.doHash(key.toString());//Use hashedKey for partitioning the keyset. 
 				if(minNodeKey > maxNodeKey){
-					if( (hashedKey > minNodeKey && hashedKey<= 0) 
-							|| (hashedKey>0 && hashedKey <=maxNodeKey)){
-						continue;
+					if( (hashedKey > minNodeKey && hashedKey<= 255) 
+							|| (hashedKey>=0 && hashedKey <=maxNodeKey)){
+						if(minNodeKey==0 && hashedKey==0){ // Special handling for node 0 and key 0.
+							Object value = keyValueStore.get(key);
+							keyValueStore.remove(key);
+							newMap.put(key, value);
+						}else{
+							continue;
+						}
 					}else{
 						Object value = keyValueStore.get(key);
 						keyValueStore.remove(key);
