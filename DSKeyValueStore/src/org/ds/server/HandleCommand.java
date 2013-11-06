@@ -99,7 +99,9 @@ public class HandleCommand implements Runnable{
 			else if(cmd.equals("get")){
 				Integer key= (Integer)argList.get(1);
 				Integer hashedKey=Hash.doHash(key.toString());//Use hashedKey only for determining the node which holds the actual key-value.
-				DSLogger.logAdmin("HandleCommand", "run","Determining location for hashed key:"+hashedKey+"performed by node "+itself.getIdentifier());
+				DSLogger.logAdmin("HandleCommand", "run","Determining location for hashed key:"+hashedKey+"computed by node "+itself.getIdentifier());
+				
+
 				Integer nextNodeId = -1;
 				//If the key's id is falling on any of the node itself
 				//then don't take higher value 
@@ -155,7 +157,7 @@ public class HandleCommand implements Runnable{
 					KVStoreOperation operation=new KVStoreOperation(key,value, KVStoreOperation.OperationType.PUT);
 					operationQueue.put(operation);	
 				}else{
-					DSLogger.logAdmin("HandleCommand", "run","Contacting "+nextNodeId+" for Putting up hashed key:"+key+" and value:"+value);
+					DSLogger.logAdmin("HandleCommand", "run","Contacting "+nextNodeId+" for putting key:"+key+" and value:"+value+" since hash of the key is :"+hashedKey);
 					DSocket sendMerge = new DSocket(aliveMembers.get(nextNodeId+"").getAddress().getHostAddress(), aliveMembers.get(nextNodeId+"").getPort());
 					List<Object>  objList= new ArrayList<Object>();
 					objList.add("put");
