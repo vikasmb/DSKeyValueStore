@@ -54,6 +54,8 @@ public class NodeClient {
 		    // Check if a numeric key is entered
 			if(isNumeric(enteredKey)){
 				key=Integer.parseInt(enteredKey);
+				Integer hashedKey=Hash.doHash(enteredKey);
+				System.out.println("Entered key:"+enteredKey+" is hashed to "+hashedKey);
 			}
 			else{
 				System.out.println("Please enter a numeric key!!");
