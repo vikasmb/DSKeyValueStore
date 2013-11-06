@@ -50,7 +50,15 @@ public class NodeClient {
 		}
 
 		if (cmd.hasOption("k")) {
-			key = Hash.doHash(cmd.getOptionValue("k"));
+		    String enteredKey=cmd.getOptionValue("k");
+		    // Check if a numeric key is entered
+			if(isNumeric(enteredKey)){
+				key=Integer.parseInt(enteredKey);
+			}
+			else{
+				System.out.println("Please enter a numeric key!!");
+				return;
+			}
 			
 		}
 
@@ -175,5 +183,14 @@ public class NodeClient {
 			DSLogger.log("NodeClient", "invokeCommand", e.getMessage());
 		}
        return null;
+	}
+	
+	public static boolean isNumeric(String str)
+	{
+	    for (char ch : str.toCharArray())
+	    {
+	        if (!Character.isDigit(ch)) return false;
+	    }
+	    return true;
 	}
 }

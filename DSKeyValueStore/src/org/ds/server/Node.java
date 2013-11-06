@@ -119,19 +119,12 @@ public class Node {
 				cmd.add(itself);
 				joinRequest.writeObjectList(cmd);
 				Member dummyContact = new Member(InetAddress.getByName(contactMachineIP), "1", 3456);
-				aliveMembers.put(dummyContact.getIdentifier(), dummyContact);
-	/*			OutputStream out = joinRequest.getOut();
-				ObjectOutputStream ois = new ObjectOutputStream(out);
-				ois.writeObject(cmd);
-				ois.writeObject(aliveMembers);
-				ois.close();
-				out.close();*/
+				aliveMembers.put(dummyContact.getIdentifier(), dummyContact);	
 			} catch (NumberFormatException e) {
 				e.printStackTrace();
 			} catch (UnknownHostException e) {
 				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
+			} catch (IOException e) {			
 				e.printStackTrace();
 			}	
 		}
