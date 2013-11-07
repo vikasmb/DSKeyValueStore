@@ -53,7 +53,13 @@ public class NodeClient {
 		    String enteredKey=cmd.getOptionValue("k");
 		    // Check if a numeric key is entered
 			if(isNumeric(enteredKey)){
-				key=Integer.parseInt(enteredKey);
+				try{
+					key=Integer.parseInt(enteredKey);
+				}catch(NumberFormatException nfe){
+					DSLogger.logAdmin("NodeClient", "main", nfe.toString());
+					System.out.println("Key is out of range 0 - 1000000");
+					System.exit(0);
+				}
 				Integer hashedKey=Hash.doHash(enteredKey);
 				System.out.println("Entered key:"+enteredKey+" is hashed to "+hashedKey);
 			}
