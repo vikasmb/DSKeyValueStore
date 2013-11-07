@@ -56,11 +56,11 @@ public class HandleCommand implements Runnable{
 			 * */
 			if(cmd.equals("joinMe")){
 				Member newMember = (Member) argList.get(1);
+				DSLogger.logAdmin("Node", "listenToCommands", "Received join request from "+newMember.getIdentifier());
 				String memberId = newMember.getIdentifier()+"";
 				synchronized (lock) {
 					aliveMembers.put(memberId, newMember);
-					DSLogger.logAdmin("Node", "listenToCommands", "Received join request from "+newMember.getIdentifier());
-					//sortedAliveMembers = this.constructSortedMap(aliveMembers);
+					sortedAliveMembers = this.constructSortedMap(aliveMembers);
 				}
 				Integer newMemberHashId = Integer.parseInt(newMember.getIdentifier());
 				Integer nextNodeId = sortedAliveMembers.higherKey(newMemberHashId)==null?sortedAliveMembers.firstKey():sortedAliveMembers.higherKey(newMemberHashId);
