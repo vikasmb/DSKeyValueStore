@@ -45,6 +45,7 @@ public class NodeClient {
 		options.addOption("ti", false, "test insert");
 		options.addOption("tl", false, "test lookup");
 		options.addOption("til", false, "test insert and lookup");
+		
 		System.setProperty("logfile.name", "./machine.log");
 		CommandLineParser parser = new PosixParser();
 		CommandLine cmd = null;
