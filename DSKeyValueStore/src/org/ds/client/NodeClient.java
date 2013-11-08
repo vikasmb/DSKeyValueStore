@@ -155,9 +155,9 @@ public class NodeClient {
 				int rndKey = randomKey[rndIndex];
 				fw.append(rndKey+"");
 				fw.append(" , ");
-				long endTime=System.currentTimeMillis();
+				long startTime =System.currentTimeMillis();
 				client.lookup(rndKey);
-				long startTime = System.currentTimeMillis();
+				long endTime = System.currentTimeMillis();
 				fw.append(endTime-startTime+"");
 				fw.append(" \n ");	
 			}
@@ -167,9 +167,11 @@ public class NodeClient {
 		}
 		
 		else if(cmd.hasOption("tl")){
-			long endTime=System.currentTimeMillis();
-			Object objValue=client.lookup(key);
-			long startTime = System.currentTimeMillis();
+			int rndKey = new Random().nextInt(1000000);
+			client.insert(rndKey, "");
+			long startTime=System.currentTimeMillis();
+			Object objValue=client.lookup(rndKey);
+			long endTime = System.currentTimeMillis();
 			System.out.println(endTime-startTime);
 			System.out.println(objValue);
 		}
