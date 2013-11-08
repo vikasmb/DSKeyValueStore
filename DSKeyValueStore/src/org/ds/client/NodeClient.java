@@ -169,6 +169,7 @@ public class NodeClient {
 		else if(cmd.hasOption("tl")){
 			int rndKey = new Random().nextInt(1000000);
 			client.insert(rndKey, "");
+			System.out.println("Inserting Key "+rndKey);
 			long startTime=System.currentTimeMillis();
 			Object objValue=client.lookup(rndKey);
 			long endTime = System.currentTimeMillis();
