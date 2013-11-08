@@ -138,7 +138,29 @@ public class NodeClient {
 				randomKey[i] = new Random().nextInt(1000001);
 				client.insert(randomKey[i], dummyValue);
 			}
+			File file =new File("/tmp/mp3readingslookup.csv");
+			FileWriter fw = null;
+			try {
+				fw = new FileWriter(file);
+				fw.append("Key");
+				fw.append(" , ");
+				fw.append("Latency ");
+				fw.append(" \n ");
 			
+			for(int i=0; i<5; i++){
+				int rndIndex = new Random().nextInt(1000);
+				int rndKey = randomKey[rndIndex];
+				fw.append(rndKey+"");
+				fw.append(" , ");
+				long endTime=System.currentTimeMillis();
+				client.lookup(rndKey);
+				long startTime = System.currentTimeMillis();
+				fw.append(endTime-startTime+"");
+				fw.append(" \n ");	
+			}
+			}catch(IOException e){
+				e.printStackTrace();
+			}
 		}
 		
 		else if(cmd.hasOption("tl")){
