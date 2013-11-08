@@ -148,21 +148,23 @@ public class NodeClient {
 			try {
 				fw = new FileWriter(file);
 				fw.append("Key");
-				fw.append(" , ");
+				fw.append(",");
 				fw.append("Latency ");
-				fw.append(" \n ");
+				fw.append("\n");
 			
 			for(int i=0; i<5; i++){
 				int rndIndex = new Random().nextInt(1000);
 				int rndKey = randomKey[rndIndex];
 				fw.append(rndKey+"");
-				fw.append(" , ");
+				fw.append(",");
 				long startTime =System.currentTimeMillis();
 				client.lookup(rndKey);
 				long endTime = System.currentTimeMillis();
 				fw.append(endTime-startTime+"");
-				fw.append(" \n ");	
+				fw.append("\n");	
 			}
+			fw.flush();
+			fw.close();
 			}catch(IOException e){
 				e.printStackTrace();
 			}
