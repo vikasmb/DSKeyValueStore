@@ -44,6 +44,8 @@ public class NodeClient {
 		options.addOption("s", false, "show");
 		options.addOption("ti", false, "test insert");
 		options.addOption("tl", false, "test lookup");
+		options.addOption("til", false, "test insert and lookup");
+		
 		System.setProperty("logfile.name", "./machine.log");
 		CommandLineParser parser = new PosixParser();
 		CommandLine cmd = null;
@@ -134,7 +136,7 @@ public class NodeClient {
 		else if(cmd.hasOption("q")){
 			client.quit();
 		}
-		else if(cmd.hasOption("ti")){
+		else if(cmd.hasOption("til")){
 			int[] randomKey = new int[1000];
 			String dummyValue = "";
 			for(int i=0; i<1000; i++){
@@ -146,21 +148,23 @@ public class NodeClient {
 			try {
 				fw = new FileWriter(file);
 				fw.append("Key");
-				fw.append(" , ");
+				fw.append(",");
 				fw.append("Latency ");
-				fw.append(" \n ");
+				fw.append("\n");
 			
 			for(int i=0; i<5; i++){
 				int rndIndex = new Random().nextInt(1000);
 				int rndKey = randomKey[rndIndex];
 				fw.append(rndKey+"");
-				fw.append(" , ");
+				fw.append(",");
 				long startTime =System.currentTimeMillis();
 				client.lookup(rndKey);
 				long endTime = System.currentTimeMillis();
 				fw.append(endTime-startTime+"");
-				fw.append(" \n ");	
+				fw.append("\n");	
 			}
+			fw.flush();
+			fw.close();
 			}catch(IOException e){
 				e.printStackTrace();
 			}
@@ -169,12 +173,22 @@ public class NodeClient {
 		else if(cmd.hasOption("tl")){
 			int rndKey = new Random().nextInt(1000000);
 			client.insert(rndKey, "");
-			System.out.println("Inserting Key "+rndKey);
+			System.out.println("Inserting Key "+rndKey+" hashed to "+Hash.doHash(rndKey+""));
 			long startTime=System.currentTimeMillis();
 			Object objValue=client.lookup(rndKey);
 			long endTime = System.currentTimeMillis();
 			System.out.println(endTime-startTime);
 			System.out.println(objValue);
+			client.delete(rndKey);
+		}
+		else if(cmd.hasOption("ti")){
+			int rndKey = new Random().nextInt(1000000);
+			System.out.println("Inserting Key "+rndKey+" hashed to "+Hash.doHash(rndKey+""));	
+			long startTime=System.currentTimeMillis();
+			client.insert(rndKey, "");
+			long endTime = System.currentTimeMillis();
+			System.out.println(endTime-startTime);
+			client.delete(rndKey);
 		}
 
 	}
