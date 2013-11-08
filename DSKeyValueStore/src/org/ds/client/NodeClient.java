@@ -1,10 +1,13 @@
 package org.ds.client;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -39,6 +42,8 @@ public class NodeClient {
 		options.addOption("d", false, "delete");
 		options.addOption("q", false, "quit");
 		options.addOption("s", false, "show");
+		options.addOption("ti", false, "test insert");
+		options.addOption("tl", false, "test lookup");
 		System.setProperty("logfile.name", "./machine.log");
 		CommandLineParser parser = new PosixParser();
 		CommandLine cmd = null;
@@ -121,10 +126,27 @@ public class NodeClient {
 			String id=(String) objMap.get(-1);
 			objMap.remove(-1);
 			System.out.println("At node id: "+id);
-			System.out.println("Local Hashmap:"+objMap);
+			System.out.println("Local Hashmap of size "+objMap.size()+" : "+objMap);
 		}
 		else if(cmd.hasOption("q")){
 			client.quit();
+		}
+		else if(cmd.hasOption("ti")){
+			int[] randomKey = new int[1000];
+			String dummyValue = "";
+			for(int i=0; i<1000; i++){
+				randomKey[i] = new Random().nextInt(1000001);
+				client.insert(randomKey[i], dummyValue);
+			}
+			
+		}
+		
+		else if(cmd.hasOption("tl")){
+			long endTime=System.currentTimeMillis();
+			Object objValue=client.lookup(key);
+			long startTime = System.currentTimeMillis();
+			System.out.println(endTime-startTime);
+			System.out.println(objValue);
 		}
 
 	}
