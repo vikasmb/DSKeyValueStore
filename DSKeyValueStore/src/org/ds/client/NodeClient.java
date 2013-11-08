@@ -60,6 +60,9 @@ public class NodeClient {
 			if(isNumeric(enteredKey)){
 				try{
 					key=Integer.parseInt(enteredKey);
+					if(key<0 || key > 1000000){
+						throw new NumberFormatException("Key not in range 0 - 1000000");
+					}
 				}catch(NumberFormatException nfe){
 					DSLogger.logAdmin("NodeClient", "main", nfe.toString());
 					System.out.println("Key is out of range 0 - 1000000");
