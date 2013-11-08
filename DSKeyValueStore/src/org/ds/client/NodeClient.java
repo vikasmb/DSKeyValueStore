@@ -134,7 +134,7 @@ public class NodeClient {
 		else if(cmd.hasOption("q")){
 			client.quit();
 		}
-		else if(cmd.hasOption("ti")){
+		else if(cmd.hasOption("til")){
 			int[] randomKey = new int[1000];
 			String dummyValue = "";
 			for(int i=0; i<1000; i++){
@@ -175,6 +175,15 @@ public class NodeClient {
 			long endTime = System.currentTimeMillis();
 			System.out.println(endTime-startTime);
 			System.out.println(objValue);
+			client.delete(rndKey);
+		}
+		else if(cmd.hasOption("ti")){
+			int rndKey = new Random().nextInt(1000000);
+			System.out.println("Inserting Key "+rndKey+" hashed to "+Hash.doHash(rndKey+""));	
+			long startTime=System.currentTimeMillis();
+			client.insert(rndKey, "");
+			long endTime = System.currentTimeMillis();
+			System.out.println(endTime-startTime);
 			client.delete(rndKey);
 		}
 
