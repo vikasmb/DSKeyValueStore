@@ -10,6 +10,14 @@ import org.ds.hash.Hash;
 import org.ds.logger.DSLogger;
 import org.ds.member.Member;
 
+/**
+ * @author pjain11, mallapu2
+ * A thread of this class is constantly running as soon as the Node is running.
+ * This class is responsible for maintaining the local key-value hash map
+ * and it responds to operations requested by HandleCommand class by taking the arguments from a BlockingQueue known as 'operationQueue'
+ * and puts back the result in another BlockingQueue known as 'resultQueue'
+ *
+ */
 public class KeyValueStore implements Runnable {
 	BlockingQueue<KVStoreOperation> operationQueue = null;
 	BlockingQueue<Object> resultQueue = null;
