@@ -4,6 +4,15 @@ import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+
+
+/**
+ * @author { pjain11, mallapu2 } @ illinois.edu
+ * This class contains a function to generate hash
+ * of either key or machine id so they can be placed
+ * on a ring of maximum size 256.
+ * Using SHA-1 to hash then taking last 8 bits out of 20 bytes
+ */
 public class Hash {
 	public static int doHash(String value){
 		MessageDigest md;
@@ -14,6 +23,10 @@ public class Hash {
 			md.reset();
 			md.update(value.getBytes("UTF-8"));
 			b = md.digest();
+			// by default the 8th bit represent sign 
+			// so it decreases the range of to -128 to 127
+			// but the required range is 0 to 255 
+			// thus the below logic takes care of it
 			if(b[19]>=0){
 				result = b[19];
 			}else{

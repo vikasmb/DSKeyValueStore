@@ -15,6 +15,13 @@ import org.ds.logger.DSLogger;
 import org.ds.member.Member;
 import org.ds.socket.DSocket;
 
+/**
+ * @author { pjain11, mallapu2 } @ illinois.edu
+ * This class takes care of what appropriate action
+ * needs to be taken for command received from Node Client
+ * Separate thread is created for handling each command
+ */
+
 public class HandleCommand implements Runnable{
 	DSocket socket;
 	TreeMap<Integer, Member> sortedAliveMembers;
@@ -44,6 +51,7 @@ public class HandleCommand implements Runnable{
 	public void run(){
 		try{
 			DSLogger.logAdmin(this.getClass().getName(), "run","Entering");
+			//sort the map
 			synchronized (lock) {
 				sortedAliveMembers = this.constructSortedMap(aliveMembers);
 				DSLogger.logAdmin(this.getClass().getName(), "run","Sorted Map :"+sortedAliveMembers);
@@ -54,6 +62,7 @@ public class HandleCommand implements Runnable{
 			/*
 			 * Handle different commands
 			 * */
+			//sent by new node wanting to join network
 			if(cmd.equals("joinMe")){
 				Member newMember = (Member) argList.get(1);
 				DSLogger.logAdmin("Node", "listenToCommands", "Received join request from "+newMember.getIdentifier());
@@ -74,6 +83,7 @@ public class HandleCommand implements Runnable{
 				sendMerge.writeObjectList(objList);
 				
 			}
+			// sent by node leaving the network
 			else if(cmd.equals("leave")){
 				Integer itselfId = Integer.parseInt(itself.getIdentifier());
 				DSLogger.logAdmin("Node", "listenToCommands", "Leaving group");
@@ -96,6 +106,7 @@ public class HandleCommand implements Runnable{
 				}
 				
 			}
+			//for getting a key
 			else if(cmd.equals("get")){
 				Integer key= (Integer)argList.get(1);
 				Integer hashedKey=Hash.doHash(key.toString());//Use hashedKey only for determining the node which holds the actual key-value.
@@ -139,6 +150,7 @@ public class HandleCommand implements Runnable{
 				DSLogger.logAdmin("HandleCommand", "run","Writing back value"+value+" to the client socket");
 				socket.writeObject(value);
 			}
+			//for putting a key
 			else if(cmd.equals("put")){
 				Integer key= (Integer)argList.get(1);
 				Integer hashedKey=Hash.doHash(key.toString());//Use hashedKey only for determining the node which needs to hold the actual key-value.
@@ -167,6 +179,7 @@ public class HandleCommand implements Runnable{
 				}
 							
 			}
+			//for updating a key
 			else if(cmd.equals("update")){
 				Integer key= (Integer)argList.get(1);
 				Integer hashedKey=Hash.doHash(key.toString());//Use hashedKey only for determining the node which needs to update the actual key-value.
@@ -223,6 +236,8 @@ public class HandleCommand implements Runnable{
 				    deleteContact.writeObjectList(objList);
 				}
 			}
+			// tell this node that new node has come up before this node
+			// so partition its key space and send the required keys to that node
 			else if(cmd.equals("partition")){
 				Member newMember = (Member)argList.get(1);
 				Integer newMemberId = Integer.parseInt(newMember.getIdentifier());
@@ -238,6 +253,7 @@ public class HandleCommand implements Runnable{
 				sendMerge.readObject();
 				
 			}
+			// tells this node to merge the received key list to its key space
 			else if(cmd.equals("merge")){
 				HashMap<Integer, Object> recievedKeys = (HashMap<Integer, Object>)argList.get(1);
 				DSLogger.logAdmin("HandleCommand", "run","In merge request");
@@ -248,6 +264,7 @@ public class HandleCommand implements Runnable{
 				DSLogger.logAdmin("HandleCommand", "run","In merge request got "+ack);
 				socket.writeObject(ack);
 			}
+			//for showing the key space on console
 			else if(cmd.equals("display")){
 				DSLogger.logAdmin("HandleCommand", "run","Retrieving local hashmap for display");
 				KVStoreOperation operation=new KVStoreOperation(-1, KVStoreOperation.OperationType.DISPLAY);

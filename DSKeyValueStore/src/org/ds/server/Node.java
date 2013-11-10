@@ -26,6 +26,12 @@ import org.ds.member.Member;
 import org.ds.networkConf.XmlParseUtility;
 import org.ds.socket.DSocket;
 
+/**
+ * @author { pjain11, mallapu2 } @ illinois.edu
+ * This class initializes the node and starts the gossiper, receiver and key value store thread
+ * it contacts the contact machine to join the network
+ * and then subsequently listens to command from Node Client
+ */
 public class Node {
 	private HashMap<String, Member> aliveMembers;
 	private HashMap<String, Member> deadMembers;
@@ -102,7 +108,7 @@ public class Node {
 	
 	/*
 	 * Contact every machine in network xml file
-	 * to let them know it has joined
+	 * to let it know that node wants to join the network
 	 * */
 	
 	public void joinNetwork(){
