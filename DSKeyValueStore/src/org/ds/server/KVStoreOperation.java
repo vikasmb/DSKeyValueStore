@@ -2,6 +2,11 @@ package org.ds.server;
 
 import java.util.Map;
 
+/**
+ * @author pjain11, mallapu2
+ * This class is used to represent an operation which can be performed on key value store.
+ *
+ */
 public class KVStoreOperation {
 
     private Integer key;

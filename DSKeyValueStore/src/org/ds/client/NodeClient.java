@@ -235,6 +235,11 @@ public class NodeClient {
 		invokeCommand(objList,false);
 	}
 
+	/**
+	 * Invokes the appropriate command on server by establishing 
+	 *  a socket connection to server 
+	 *  and writes the argument list and passes back the result obtained from server back to the node client.
+	 */
 	private Object invokeCommand(List<Object> objList,
 			boolean waitForOutputFromServer) {
 		DSLogger.logAdmin("NodeClient", "invokeCommand", "Entering");
