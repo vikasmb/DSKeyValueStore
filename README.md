@@ -19,15 +19,23 @@ Invoke java -jar DSKeyValueClient.jar <parameters> for performing
 operations on key value store from any node.
 
 Following parameters are available -
+
 1. -s 				to look up all key values at that node.
+
 2. -i -k <key> -v <value> 	to store key value pair at that node.
+
 3. -l -k <key> 			to look up the key across all the nodes.
+
 4. -u -k <key> -v <value> 	to update value of a key stored at any node.
+ 
 5. -d -k <key> 			to delete a key stored at any node.
+
 6. -q 				to quit and leave the group thus sending all local keys to successor.
 
 
-Design – Uses consistent hashing to hash both key and the machine value to an integer in the range 0-255 (bits considered after hashing – 8). We chose the hash approach for mapping the machines to the ring structure since in this case both the hash of the key and machine can be computed in a uniform manner. In case of high churn segmentation approach might be more costly in terms of bandwidth and time as it can involve transfer of keys to/from more than one machine.
+Design – 
+
+Uses consistent hashing to hash both key and the machine value to an integer in the range 0-255 (bits considered after hashing – 8). We chose the hash approach for mapping the machines to the ring structure since in this case both the hash of the key and machine can be computed in a uniform manner. In case of high churn segmentation approach might be more costly in terms of bandwidth and time as it can involve transfer of keys to/from more than one machine.
 Every node in the system runs 4 threads continuously and a thread every time a request is served-
 
 Main thread - 
